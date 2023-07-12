@@ -1,0 +1,124 @@
+[build-system]
+requires = [
+    "hatchling>=1.3.1",
+    "jupyterlab>=3",
+]
+build-backend = "hatchling.build"
+
+[project]
+name = "monomoy"
+description = "A Custom Jupyter Widget Library"
+readme = "README.md"
+license = { file = "LICENSE.txt" }
+requires-python = ">=3.7"
+authors = [
+    { name = "Daniel Kerrigan", email = "kerrigan.d@northeastern.edu" },
+]
+keywords = [
+    "IPython",
+    "Jupyter",
+    "Widgets",
+]
+classifiers = [
+    "Framework :: Jupyter",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+dependencies = [
+    "ipywidgets>=7.6.0,<9",
+    "pandas>=1.3.5",
+    "numpy>=1.21.5",
+    "joblib>=1.1.0",
+    "scikit-learn>=1.0.2",
+    "tqdm>=4.64.1",
+]
+version = "0.1.0"
+
+[project.optional-dependencies]
+docs = [
+    "jupyter_sphinx",
+    "nbsphinx",
+    "nbsphinx-link",
+    "pypandoc",
+    "pytest_check_links",
+    "recommonmark",
+    "sphinx>=1.5",
+    "sphinx_rtd_theme",
+]
+examples = [
+    "pmlb",
+    "xgboost"
+]
+test = [
+    "pytest-cov",
+    "pytest>=6.0",
+]
+dev = [
+    "pylint",
+    "black",
+]
+
+[project.urls]
+Homepage = "https://github.com/DanielKerrigan/monomoy"
+
+[tool.hatch.build]
+artifacts = [
+    "monomoy/nbextension/index.*",
+    "monomoy/labextension/*.tgz",
+    "monomoy/labextension",
+]
+
+[tool.hatch.build.targets.wheel.shared-data]
+"monomoy/nbextension" = "share/jupyter/nbextensions/monomoy"
+"monomoy/labextension" = "share/jupyter/labextensions/monomoy"
+"./install.json" = "share/jupyter/labextensions/monomoy/install.json"
+"./monomoy.json" = "etc/jupyter/nbconfig/notebook.d/monomoy.json"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    ".github",
+]
+
+[tool.hatch.build.hooks.jupyter-builder]
+build-function = "hatch_jupyter_builder.npm_builder"
+ensured-targets = [
+    "monomoy/nbextension/index.js",
+    "monomoy/labextension/package.json",
+]
+skip-if-exists = [
+    "monomoy/nbextension/index.js",
+    "monomoy/labextension/package.json",
+]
+dependencies = [
+    "hatch-jupyter-builder>=0.5.0",
+]
+
+[tool.hatch.build.hooks.jupyter-builder.build-kwargs]
+path = "."
+build_cmd = "build:prod"
+npm = ["npm"]
+
+[tool.tbump]
+field = [
+    { name = "channel", default = "" },
+    { name = "release", default = "" },
+]
+file = [
+    { src = "pyproject.toml", version_template = "version = \"{major}.{minor}.{patch}{channel}{release}\"" },
+    { src = "monomoy/_version.py" },
+]
+
+[tool.tbump.version]
+current = "0.1.0"
+regex = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)((?P<channel>a|b|rc|.dev)(?P<release>\\d+))?"
+
+[tool.tbump.git]
+message_template = "Bump to {new_version}"
+tag_template = "v{new_version}"

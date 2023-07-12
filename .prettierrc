@@ -1,0 +1,13 @@
+{
+  "singleQuote": true,
+  "plugins": ["prettier-plugin-svelte", "prettier-plugin-tailwindcss"],
+  "pluginSearchDirs": false,
+  "overrides": [
+    {
+      "files": "*.svelte",
+      "options": {
+        "parser": "svelte"
+      }
+    }
+  ]
+}

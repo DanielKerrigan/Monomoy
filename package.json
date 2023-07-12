@@ -1,0 +1,98 @@
+{
+  "name": "monomoy",
+  "version": "0.1.0",
+  "description": "A Custom Jupyter Widget Library",
+  "keywords": [
+    "jupyter",
+    "jupyterlab",
+    "jupyterlab-extension",
+    "widgets"
+  ],
+  "files": [
+    "lib/**/*.js",
+    "dist/*.js",
+    "css/*.css"
+  ],
+  "homepage": "https://github.com/DanielKerrigan/monomoy",
+  "bugs": {
+    "url": "https://github.com/DanielKerrigan/monomoy/issues"
+  },
+  "license": "BSD-3-Clause",
+  "author": {
+    "name": "Daniel Kerrigan",
+    "email": "kerrigan.d@northeastern.edu"
+  },
+  "main": "lib/index.js",
+  "types": "./lib/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DanielKerrigan/monomoy"
+  },
+  "scripts": {
+    "build": "npm run build:nbextension && npm run build:labextension:dev",
+    "build:prod": "npm run build:nbextension && npm run build:labextension",
+    "build:labextension": "jupyter labextension build .",
+    "build:labextension:dev": "jupyter labextension build --development True .",
+    "build:nbextension": "webpack",
+    "clean": "npm run clean:lib && npm run clean:nbextension && npm run clean:labextension",
+    "clean:lib": "rimraf lib",
+    "clean:labextension": "rimraf monomoy/labextension",
+    "clean:nbextension": "rimraf monomoy/nbextension/index.js*",
+    "fix": "prettier --plugin-search-dir . --write src && eslint . --ext .ts,.tsx,.svelte --fix",
+    "check": "prettier --plugin-search-dir . --check src && eslint . --ext .ts,.tsx,.svelte",
+    "test": "uvu -r tsm src/tests",
+    "watch": "npm-run-all -p watch:*",
+    "watch:nbextension": "webpack --watch --mode=development",
+    "watch:labextension": "jupyter labextension watch ."
+  },
+  "dependencies": {
+    "@jupyter-widgets/base": "^1.1.10 || ^2 || ^3 || ^4 || ^5 || ^6"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.5.0",
+    "@babel/preset-env": "^7.5.0",
+    "@jupyter-widgets/base-manager": "^1.0.2",
+    "@jupyterlab/builder": "^3 || ^4",
+    "@lumino/application": "^1.6.0",
+    "@lumino/widgets": "^1.6.0",
+    "@tsconfig/svelte": "^3.0.0",
+    "@types/d3": "^7.4.0",
+    "@types/webpack-env": "^1.13.6",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "acorn": "^7.2.0",
+    "autoprefixer": "^10.4.14",
+    "css-loader": "^6.7.0",
+    "d3": "^7.4.4",
+    "eslint": "^8.28.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-svelte3": "^4.0.0",
+    "fs-extra": "^7.0.0",
+    "identity-obj-proxy": "^3.0.0",
+    "mkdirp": "^0.5.1",
+    "npm-run-all": "^4.1.3",
+    "postcss": "^8.4.25",
+    "postcss-loader": "^7.3.3",
+    "prettier": "^2.8.8",
+    "prettier-plugin-svelte": "^2.8.1",
+    "prettier-plugin-tailwindcss": "^0.3.0",
+    "rimraf": "^2.6.2",
+    "source-map-loader": "^1.1.3",
+    "style-loader": "^3.0.0",
+    "svelte": "^3.54.0",
+    "svelte-loader": "^3.1.5",
+    "svelte-preprocess": "5.0.0",
+    "tailwindcss": "^3.3.2",
+    "ts-loader": "^9.0.0",
+    "tslib": "^2.4.1",
+    "tsm": "^2.2.1",
+    "typescript": "^4.9.3",
+    "uvu": "^0.5.3",
+    "webpack": "^5.61.0",
+    "webpack-cli": "^4.0.0"
+  },
+  "jupyterlab": {
+    "extension": true,
+    "outputDir": "monomoy/labextension/"
+  }
+}
