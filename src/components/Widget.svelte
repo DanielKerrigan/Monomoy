@@ -10,10 +10,13 @@
 <!-- not using tailwind for the root component of the widget -->
 <div
   id="monomoy-container"
-  class="monomoy-containe"
+  class="monomoy-container"
   style:height="{$height}px"
   style:width="100%"
-  style:border="1px solid #d1d5db"
 >
-  <svelte:component this={pages[$pageIndex]} />
+  <div
+    class="tw-h-full tw-w-full tw-bg-gray-100 tw-p-8 tw-font-sans tw-text-base"
+  >
+    <svelte:component this={pages[$pageIndex]} />
+  </div>
 </div>

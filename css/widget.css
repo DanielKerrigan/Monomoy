@@ -382,3 +382,9 @@ Constrain images and videos to the parent width and preserve their intrinsic asp
 .monomoy-container [hidden] {
   display: none;
 }
+
+/* my additions */
+
+.monomoy-container label {
+  margin: 0;
+}
