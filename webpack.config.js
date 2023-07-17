@@ -28,12 +28,12 @@ const externals = ['@jupyter-widgets/base'];
 
 const resolve = {
   alias: {
-    svelte: path.resolve('node_modules', 'svelte'),
+    svelte: path.resolve('node_modules', 'svelte/src/runtime'),
   },
   // Add '.ts' and '.tsx' as resolvable extensions.
   extensions: ['.webpack.js', '.web.js', '.ts', '.js', '.svelte'],
   mainFields: ['svelte', 'browser', 'module', 'main'],
-  conditionNames: ['svelte'],
+  conditionNames: ['svelte', 'browser', 'import'],
 };
 
 module.exports = [

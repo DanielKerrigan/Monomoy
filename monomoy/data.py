@@ -23,6 +23,8 @@ def compute_widget_data(
     predict: Callable[[pd.DataFrame], List[float]],
     df: pd.DataFrame,
     features: List[str],
+    model_output_label: str,
+    model_description: str,
     resolution: int = 20,
     one_hot_features: Union[Dict[str, List[Tuple[str, str]]], None] = None,
     nominal_features: Union[List[str], None] = None,
@@ -146,6 +148,8 @@ def compute_widget_data(
         "feature_info": md.feature_info,
         "pds": pds,
         "ices": ices,
+        "model_output_label": model_output_label,
+        "model_description": model_description,
     }
 
     if output_path:

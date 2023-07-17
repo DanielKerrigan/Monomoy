@@ -40,8 +40,10 @@ class ExampleWidget(DOMWidget):
     pds = Dict({}).tag(sync=True)
     ices = Dict({}).tag(sync=True)
     feature_names = ListTraitlet([]).tag(sync=True)
-    height = Int(600).tag(sync=True)
     labels = ListTraitlet([]).tag(sync=True)
+    model_output_label = Unicode("").tag(sync=True)
+    model_description = Unicode("").tag(sync=True)
+    height = Int(600).tag(sync=True)
 
     """
     The ice lines are a lot of data, so we want to limit how often we have to
@@ -87,6 +89,9 @@ class ExampleWidget(DOMWidget):
         self.labels = (
             labels.tolist() if isinstance(labels, (np.ndarray, pd.Series)) else labels
         )
+
+        self.model_output_label = data["model_output_label"]
+        self.model_description = data["model_description"]
 
         self.height = height
 

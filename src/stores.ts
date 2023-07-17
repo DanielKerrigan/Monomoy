@@ -60,14 +60,17 @@ export let feature_info: Writable<Record<string, FeatureInfo>>;
 export let pds: Writable<Record<string, OneWayPD>>;
 export let ices: Writable<Record<string, number[][]>>;
 export let feature_names: Writable<string[]>;
-export let height: Writable<number>;
+export let model_output_label: Writable<string>;
+export let model_description: Writable<string>;
 export let labels: Writable<number[]>;
+export let height: Writable<number>;
 
 // ==== Stores that are not synced with traitlets ====
 
 export let pageIndex: Writable<number>;
 export let selectedFeatures: Writable<string[]>;
 export let drawnPDPs: Writable<Record<string, Map<number, number>>>;
+export let nextButtonEnabled: Writable<boolean>;
 
 /**
  * Note that when the cell containing the widget is re-run, a new model is
@@ -97,9 +100,21 @@ export function setStores(model: DOMWidgetModel): void {
 
   height = createSyncedWidget<number>('height', 600, model);
 
+  model_output_label = createSyncedWidget<string>(
+    'model_output_label',
+    '',
+    model
+  );
+  model_description = createSyncedWidget<string>(
+    'model_description',
+    '',
+    model
+  );
+
   // ==== Stores that are not synced with traitlets ====
 
   pageIndex = writable(0);
   selectedFeatures = writable([]);
   drawnPDPs = writable({});
+  nextButtonEnabled = writable(false);
 }

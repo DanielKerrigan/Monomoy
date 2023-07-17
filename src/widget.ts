@@ -31,6 +31,8 @@ export class ExampleModel extends DOMWidgetModel {
       ices: {},
       feature_names: [],
       labels: [],
+      model_output_label: '',
+      model_description: '',
       height: 600,
     };
   }

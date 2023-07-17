@@ -1,7 +1,13 @@
 <script lang="ts">
-  import { feature_names, selectedFeatures, pageIndex } from '../stores';
+  import {
+    feature_names,
+    selectedFeatures,
+    nextButtonEnabled,
+  } from '../stores';
 
   let searchValue = '';
+
+  $: $nextButtonEnabled = $selectedFeatures.length > 0;
 
   function addFeature(feature: string) {
     $selectedFeatures = [...$selectedFeatures, feature];
@@ -22,11 +28,12 @@
   }
 </script>
 
-<div class="tw-flex tw-h-full tw-w-full tw-justify-center">
-  <div class="tw-flex tw-flex-col tw-gap-16">
-    <div class="tw-text-lg">
-      Select and rank the most important features for the model.
-    </div>
+<div class="tw-h-full tw-w-full">
+  <div class="tw-flex tw-flex-col tw-items-center tw-gap-16">
+    <p class="tw-w-128">
+      This model contains {$feature_names.length} features that are listed below
+      on the left. Select and rank the most important features for the model.
+    </p>
 
     <div class="tw-flex tw-min-h-0 tw-gap-16">
       <div
@@ -93,7 +100,7 @@
                 </svg>
               </button>
               <button
-                class="tw-flex tw-flex-none  tw-items-center tw-justify-center tw-rounded-full tw-border-none tw-text-black hover:tw-bg-indigo-100 active:tw-bg-indigo-200 disabled:tw-cursor-not-allowed disabled:tw-text-gray-300 hover:disabled:tw-bg-transparent"
+                class="tw-flex tw-flex-none tw-items-center tw-justify-center tw-rounded-full tw-border-none tw-text-black hover:tw-bg-indigo-100 active:tw-bg-indigo-200 disabled:tw-cursor-not-allowed disabled:tw-text-gray-300 hover:disabled:tw-bg-transparent"
                 disabled={i === $selectedFeatures.length - 1}
                 on:click={() => reorderFeature(feature, i, i + 1)}
               >
@@ -132,15 +139,6 @@
           {/each}
         </div>
       </div>
-    </div>
-
-    <div class="tw-ml-auto">
-      <button
-        disabled={$selectedFeatures.length === 0}
-        on:click={() => ($pageIndex = $pageIndex + 1)}
-        class="tw-rounded-md tw-bg-indigo-600 tw-px-2 tw-py-1 tw-text-white hover:tw-bg-indigo-700 active:tw-bg-indigo-800 disabled:tw-cursor-not-allowed disabled:tw-bg-gray-300"
-        >Next</button
-      >
     </div>
   </div>
 </div>
