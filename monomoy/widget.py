@@ -41,8 +41,8 @@ class ExampleWidget(DOMWidget):
     ices = Dict({}).tag(sync=True)
     feature_names = ListTraitlet([]).tag(sync=True)
     labels = ListTraitlet([]).tag(sync=True)
-    model_output_label = Unicode("").tag(sync=True)
-    model_description = Unicode("").tag(sync=True)
+    model_output_short = Unicode("").tag(sync=True)
+    model_output_long = Unicode("").tag(sync=True)
     height = Int(600).tag(sync=True)
 
     """
@@ -90,8 +90,8 @@ class ExampleWidget(DOMWidget):
             labels.tolist() if isinstance(labels, (np.ndarray, pd.Series)) else labels
         )
 
-        self.model_output_label = data["model_output_label"]
-        self.model_description = data["model_description"]
+        self.model_output_short = data["model_output_short"]
+        self.model_output_long = data["model_output_long"]
 
         self.height = height
 

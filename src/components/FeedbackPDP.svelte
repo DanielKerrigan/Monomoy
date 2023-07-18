@@ -5,27 +5,27 @@
   import { ascending, zip } from 'd3-array';
   import { line as d3line } from 'd3-shape';
   import type { OneWayPD } from '../types';
+  import { model_output_short } from '../stores';
 
   export let pd: OneWayPD;
   export let drawn: Map<number, number>;
-
-  const width = 300;
-  const height = 200;
+  export let width = 300;
+  export let height = 200;
 
   const marginTop = 10;
   const marginRight = 20;
   const marginBottom = 30;
-  const marginLeft = 30;
+  const marginLeft = 50;
 
-  const x = scaleLinear()
+  $: x = scaleLinear()
     .domain([Math.min(...pd.x_values), Math.max(...pd.x_values)])
     .range([marginLeft, width - marginRight]);
 
-  const y = scaleLinear()
+  $: y = scaleLinear()
     .domain([pd.pdp_min, pd.pdp_max])
     .range([height - marginBottom, marginTop]);
 
-  const line = d3line()
+  $: line = d3line()
     .x((d) => x(d[0]))
     .y((d) => y(d[1]));
 
@@ -35,8 +35,8 @@
 
 <svg {width} {height}>
   <rect {width} {height} fill="white" />
-  <XAxis scale={x} y={height - marginBottom} />
-  <YAxis scale={y} x={marginLeft} />
+  <XAxis scale={x} y={height - marginBottom} label={pd.feature} />
+  <YAxis scale={y} x={marginLeft} label={$model_output_short} />
 
   <g>
     <rect

@@ -25,6 +25,8 @@
     class="tw-flex tw-h-full tw-w-full tw-flex-col tw-gap-8 tw-bg-gray-100 tw-px-8 tw-py-4 tw-font-sans tw-text-base"
   >
     <Progress numSteps={pages.length} />
-    <svelte:component this={pages[$pageIndex]} />
+    <div class="tw-min-h-0 tw-flex-1">
+      <svelte:component this={pages[$pageIndex]} />
+    </div>
   </div>
 </div>

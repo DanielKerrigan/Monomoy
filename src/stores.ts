@@ -60,8 +60,8 @@ export let feature_info: Writable<Record<string, FeatureInfo>>;
 export let pds: Writable<Record<string, OneWayPD>>;
 export let ices: Writable<Record<string, number[][]>>;
 export let feature_names: Writable<string[]>;
-export let model_output_label: Writable<string>;
-export let model_description: Writable<string>;
+export let model_output_short: Writable<string>;
+export let model_output_long: Writable<string>;
 export let labels: Writable<number[]>;
 export let height: Writable<number>;
 
@@ -100,13 +100,13 @@ export function setStores(model: DOMWidgetModel): void {
 
   height = createSyncedWidget<number>('height', 600, model);
 
-  model_output_label = createSyncedWidget<string>(
-    'model_output_label',
+  model_output_short = createSyncedWidget<string>(
+    'model_output_short',
     '',
     model
   );
-  model_description = createSyncedWidget<string>(
-    'model_description',
+  model_output_long = createSyncedWidget<string>(
+    'model_output_long',
     '',
     model
   );

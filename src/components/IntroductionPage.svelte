@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { nextButtonEnabled, model_description } from '../stores';
+  import { nextButtonEnabled, model_output_long } from '../stores';
 
   $: $nextButtonEnabled = true;
 </script>
@@ -12,7 +12,7 @@
     your expectations to the model's behavior.
   </p>
   <p class="tw-w-128">
-    You will be analyzing a model that {$model_description}
+    You will be analyzing a model that predicts {$model_output_long}.
   </p>
   <p class="tw-w-128">
     Press the "Next" button in the top-right corner to continue.

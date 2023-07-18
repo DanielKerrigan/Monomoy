@@ -40,7 +40,7 @@
   {width}
   {height}
   fill="black"
-  class:pdpilot-bold={bold}
+  class={bold ? 'tw-font-bold' : ''}
   font-size={fontSize}
   transform={rotate ? `rotate(270, ${x}, ${y})` : null}
 >
