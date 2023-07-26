@@ -6,6 +6,7 @@ Compute partial dependence plots
 """
 
 import json
+import math
 from pathlib import Path
 from typing import Callable, Dict, List, Tuple, Union
 
@@ -136,6 +137,16 @@ def compute_widget_data(
     pds = {owp["feature"]: owp for owp, _ in one_way_results}
     ices = {owp["feature"]: lines for owp, lines in one_way_results}
 
+    pdp_min = math.inf
+    pdp_max = -math.inf
+
+    for owp, _ in one_way_results:
+        if owp["pdp_min"] < pdp_min:
+            pdp_min = owp["pdp_min"]
+
+        if owp["pdp_max"] > pdp_max:
+            pdp_max = owp["pdp_max"]
+
     # to make the dataset easier to work with on the frontend,
     # turn one-hot encoded features into integer encoded categories
     frontend_df = _turn_one_hot_into_category(subset, md)
@@ -147,6 +158,7 @@ def compute_widget_data(
         "num_instances": md.size,
         "feature_info": md.feature_info,
         "pds": pds,
+        "pd_extent": [pdp_min, pdp_max],
         "ices": ices,
         "model_output_short": model_output_short,
         "model_output_long": model_output_long,
@@ -242,3 +254,12 @@ def _turn_one_hot_into_category(df_one_hot, md):
         df[feature] = int_series
 
     return df
+
+
+def get_initial_drawn_pds(pds):
+    results = {}
+
+    for feature, owp in pds.items():
+        results[feature] = [{"x": x, "y": 0, "drawn": False} for x in owp["x_values"]]
+
+    return results

@@ -1,95 +1,123 @@
 <script lang="ts">
   import XAxis from './XAxis.svelte';
   import YAxis from './YAxis.svelte';
-  import { scaleLinear } from 'd3-scale';
-  import { ascending, zip } from 'd3-array';
+  import { scaleLinear, scalePoint } from 'd3-scale';
   import { line as d3line } from 'd3-shape';
-  import type { OneWayPD } from '../types';
-  import { model_output_short } from '../stores';
+  import type { DrawnPD, OneWayPD } from '../types';
+  import { model_output_short, feature_info, pdExtentNice } from '../stores';
+  import { pdToXY } from '../vis-utils';
 
   export let pd: OneWayPD;
-  export let drawn: Map<number, number>;
+  export let drawn: DrawnPD;
   export let width = 300;
   export let height = 200;
 
-  const marginTop = 10;
-  const marginRight = 20;
-  const marginBottom = 30;
-  const marginLeft = 50;
+  const marginTop = 12;
+  const marginRight = 24;
+  const marginBottom = 32;
+  const marginLeft = 56;
 
-  $: x = scaleLinear()
-    .domain([Math.min(...pd.x_values), Math.max(...pd.x_values)])
-    .range([marginLeft, width - marginRight]);
+  $: feature = $feature_info[pd.feature];
+
+  $: x =
+    feature.kind === 'quantitative'
+      ? scaleLinear()
+          .domain([Math.min(...pd.x_values), Math.max(...pd.x_values)])
+          .range([marginLeft, width - marginRight])
+      : scalePoint<number>()
+          .domain(pd.x_values)
+          .range([marginLeft, width - marginRight])
+          .padding(0.5);
 
   $: y = scaleLinear()
-    .domain([pd.pdp_min, pd.pdp_max])
+    .domain($pdExtentNice)
     .range([height - marginBottom, marginTop]);
 
-  $: line = d3line()
-    .x((d) => x(d[0]))
-    .y((d) => y(d[1]));
+  $: line = d3line<{ x: number; y: number }>()
+    .x((d) => x(d.x) ?? 0)
+    .y((d) => y(d.y));
 
-  $: drawnPoints = Array.from(drawn).sort((a, b) => ascending(a[0], b[0]));
-  $: actualPoints = zip(pd.x_values, pd.mean_predictions) as [number, number][];
+  $: radius =
+    'bandwidth' in x && !feature.ordered
+      ? Math.max(2, Math.min(8, x.step() / 2))
+      : 3;
+
+  $: pdPoints = pdToXY(pd);
 </script>
 
 <svg {width} {height}>
-  <rect {width} {height} fill="white" />
-  <XAxis scale={x} y={height - marginBottom} label={pd.feature} />
-  <YAxis scale={y} x={marginLeft} label={$model_output_short} />
+  <rect {width} {height} rx={6} ry={6} fill="white" />
+
+  <XAxis
+    scale={x}
+    y={height - marginBottom}
+    label={pd.feature}
+    gridHeight={-(height - marginBottom - marginTop)}
+    integerOnly={feature.subkind === 'discrete'}
+    value_map={'value_map' in feature ? feature.value_map : {}}
+    tickColor={'#f3f4f6'}
+  />
+  <YAxis
+    scale={y}
+    x={marginLeft}
+    label={$model_output_short}
+    gridWidth={width - marginLeft - marginRight}
+    tickColor={'#f3f4f6'}
+  />
 
   <g>
-    <rect
-      x={0}
-      y={marginTop}
-      {width}
-      height={height - marginTop - marginBottom}
-      fill="transparent"
-    />
-
     <g>
-      <g>
-        {#each actualPoints as [px, py]}
+      {#if feature.kind === 'categorical'}
+        {#each drawn as d}
           <circle
-            cx={x(px)}
-            cy={y(py)}
-            r="3"
-            fill="crimson"
+            cx={x(d.x)}
+            cy={y(d.y)}
+            r={radius}
+            fill={feature.ordered ? 'steelblue' : 'none'}
+            stroke={feature.ordered ? 'none' : 'steelblue'}
+            stroke-width="2"
             pointer-events="none"
           />
         {/each}
-      </g>
+      {/if}
+    </g>
 
+    {#if feature.ordered}
       <path
-        d={line(actualPoints)}
+        d={line(drawn)}
         fill="none"
+        stroke="steelblue"
+        stroke-width="2"
+        pointer-events="none"
+      />
+    {/if}
+  </g>
+
+  <g>
+    <g>
+      {#if feature.kind === 'categorical'}
+        {#each pdPoints as d}
+          <circle
+            cx={x(d.x)}
+            cy={y(d.y)}
+            r={radius}
+            fill={feature.ordered ? 'crimson' : 'none'}
+            stroke={feature.ordered ? 'none' : 'crimson'}
+            stroke-width="2"
+            pointer-events="none"
+          />
+        {/each}
+      {/if}
+    </g>
+
+    {#if feature.ordered}
+      <path
+        d={line(pdPoints)}
+        fill="none"
+        stroke-width="2"
         stroke="crimson"
         pointer-events="none"
       />
-    </g>
-
-    <g>
-      <g>
-        {#each drawnPoints as [px, py]}
-          <circle
-            cx={x(px)}
-            cy={y(py)}
-            r="3"
-            fill="steelblue"
-            pointer-events="none"
-          />
-        {/each}
-      </g>
-
-      <path
-        d={line(drawnPoints)}
-        fill="none"
-        stroke="steelblue"
-        pointer-events="none"
-      />
-    </g>
+    {/if}
   </g>
 </svg>
-
-<style>
-</style>

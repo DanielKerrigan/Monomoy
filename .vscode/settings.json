@@ -2,10 +2,10 @@
     "python.formatting.provider": "black",
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
-    "python.linting.pylintPath": "/Users/danielkerrigan/opt/miniconda3/envs/monomoy/bin/pylint",
-    "python.defaultInterpreterPath": "/Users/danielkerrigan/opt/miniconda3/envs/monomoy/bin/python",
+    "python.linting.pylintPath": "/Users/danielkerrigan/miniconda3/envs/monomoy/bin/pylint",
+    "python.defaultInterpreterPath": "/Users/danielkerrigan/miniconda3/envs/monomoy/bin/python",
     "svelte.enable-ts-plugin": true,
-    "eslint.nodePath": "/Users/danielkerrigan/opt/miniconda3/envs/monomoy/bin/node",
+    "eslint.nodePath": "/Users/danielkerrigan/miniconda3/envs/monomoy/bin/node",
     "editor.formatOnSave": true,
     "eslint.validate": [
         "javascript",
@@ -19,5 +19,5 @@
     },
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
+    }
 }

@@ -20,6 +20,7 @@ from traitlets import List as ListTraitlet
 from traitlets import Unicode
 
 from ._frontend import module_name, module_version
+from .data import get_initial_drawn_pds
 
 
 class ExampleWidget(DOMWidget):
@@ -35,15 +36,23 @@ class ExampleWidget(DOMWidget):
     # widget state that is synced between Python and JavaScript
 
     dataset = Dict({}).tag(sync=True)
+    labels = ListTraitlet([]).tag(sync=True)
     num_instances = Int(0).tag(sync=True)
     feature_info = Dict({}).tag(sync=True)
+
     pds = Dict({}).tag(sync=True)
+    pd_extent = ListTraitlet([0, 0]).tag(sync=True)
+
     ices = Dict({}).tag(sync=True)
+
     feature_names = ListTraitlet([]).tag(sync=True)
-    labels = ListTraitlet([]).tag(sync=True)
+
     model_output_short = Unicode("").tag(sync=True)
     model_output_long = Unicode("").tag(sync=True)
+
     height = Int(600).tag(sync=True)
+
+    drawn_pds = Dict({}).tag(sync=True)
 
     """
     The ice lines are a lot of data, so we want to limit how often we have to
@@ -79,22 +88,27 @@ class ExampleWidget(DOMWidget):
         # synced widget state
 
         self.dataset = data["dataset"]
+        self.labels = (
+            labels.tolist() if isinstance(labels, (np.ndarray, pd.Series)) else labels
+        )
         self.num_instances = data["num_instances"]
         self.feature_info = data["feature_info"]
 
         self.pds = data["pds"]
+        self.pd_extent = data["pd_extent"]
+
         self.ices = data["ices"]
 
         self.feature_names = sorted(data["pds"].keys())
-        self.labels = (
-            labels.tolist() if isinstance(labels, (np.ndarray, pd.Series)) else labels
-        )
 
         self.model_output_short = data["model_output_short"]
         self.model_output_long = data["model_output_long"]
 
         self.height = height
 
+        self.drawn_pds = get_initial_drawn_pds(self.pds)
+
         # not synced
+
         self.df = df
         self.predict = predict

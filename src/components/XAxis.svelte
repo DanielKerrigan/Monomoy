@@ -103,6 +103,7 @@
               fill="black"
               stroke-width={2}
               paint-order="stroke"
+              class="tw-select-none"
             >
               {format(tick)}
             </text>

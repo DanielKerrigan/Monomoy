@@ -16,18 +16,22 @@
 </script>
 
 <div class="tw-flex tw-items-center">
-  <svg class="tw-min-w-0 tw-flex-1" height={bigR * 2} bind:contentRect>
-    <g>
-      {#each steps as step}
-        <circle
-          cx={x(step)}
-          cy={bigR}
-          r={step === $pageIndex ? bigR : smallR}
-          class={step <= $pageIndex ? 'tw-fill-indigo-600' : 'tw-fill-gray-400'}
-        />
-      {/each}
-    </g>
-  </svg>
+  <div class="tw-min-w-0 tw-flex-1" bind:contentRect>
+    <svg class="tw-min-w-full" height={bigR * 2}>
+      <g>
+        {#each steps as step}
+          <circle
+            cx={x(step)}
+            cy={bigR}
+            r={step === $pageIndex ? bigR : smallR}
+            class={step <= $pageIndex
+              ? 'tw-fill-indigo-600'
+              : 'tw-fill-gray-400'}
+          />
+        {/each}
+      </g>
+    </svg>
+  </div>
   <button
     disabled={!$nextButtonEnabled}
     on:click={() => ($pageIndex = $pageIndex + 1)}

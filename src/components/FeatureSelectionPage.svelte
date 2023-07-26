@@ -53,7 +53,7 @@
           {#if feature.toLowerCase().includes(searchValue.toLowerCase())}
             <div class="tw-flex tw-items-center tw-justify-start">
               <button
-                class="tw-flex tw-flex-none tw-items-center tw-justify-center tw-rounded-full tw-border-none tw-text-black hover:tw-bg-indigo-100 active:tw-bg-indigo-200 disabled:tw-cursor-not-allowed disabled:tw-text-gray-300 hover:disabled:tw-bg-transparent"
+                class="tw-mx-1 tw-flex tw-flex-none tw-items-center tw-justify-center tw-rounded-full tw-border-none tw-text-black hover:tw-bg-indigo-100 active:tw-bg-indigo-200 disabled:tw-cursor-not-allowed disabled:tw-text-gray-300 hover:disabled:tw-bg-transparent"
                 disabled={$selectedFeatures.includes(feature)}
                 on:click={() => addFeature(feature)}
               >

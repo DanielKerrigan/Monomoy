@@ -78,3 +78,5 @@ export type OneWayPD = {
   ice_max: number;
   deviation: number;
 };
+
+export type DrawnPD = { x: number; y: number; drawn: boolean }[];

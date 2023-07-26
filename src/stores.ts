@@ -1,8 +1,9 @@
-import { writable } from 'svelte/store';
-import type { Writable } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
+import type { Writable, Readable } from 'svelte/store';
 import type { DOMWidgetModel } from '@jupyter-widgets/base';
 
-import type { Dataset, OneWayPD, FeatureInfo } from './types';
+import type { Dataset, OneWayPD, FeatureInfo, DrawnPD } from './types';
+import { getNiceDomain } from './vis-utils';
 
 /**
  *
@@ -55,22 +56,30 @@ function createSyncedWidget<T>(
 // ==== Stores that are synced with traitlets ====
 
 export let dataset: Writable<Dataset>;
+export let labels: Writable<number[]>;
 export let num_instances: Writable<number>;
 export let feature_info: Writable<Record<string, FeatureInfo>>;
+
 export let pds: Writable<Record<string, OneWayPD>>;
+export let pd_extent: Writable<[number, number]>;
+
 export let ices: Writable<Record<string, number[][]>>;
+
 export let feature_names: Writable<string[]>;
+
 export let model_output_short: Writable<string>;
 export let model_output_long: Writable<string>;
-export let labels: Writable<number[]>;
+
 export let height: Writable<number>;
+
+export let drawn_pds: Writable<Record<string, DrawnPD>>;
 
 // ==== Stores that are not synced with traitlets ====
 
 export let pageIndex: Writable<number>;
 export let selectedFeatures: Writable<string[]>;
-export let drawnPDPs: Writable<Record<string, Map<number, number>>>;
 export let nextButtonEnabled: Writable<boolean>;
+export let pdExtentNice: Readable<[number, number]>;
 
 /**
  * Note that when the cell containing the widget is re-run, a new model is
@@ -83,8 +92,8 @@ export function setStores(model: DOMWidgetModel): void {
   // ==== Stores that are synced with traitlets ====
 
   dataset = createSyncedWidget<Dataset>('dataset', {}, model);
+  labels = createSyncedWidget<number[]>('labels', [], model);
   num_instances = createSyncedWidget<number>('num_instances', 0, model);
-
   feature_info = createSyncedWidget<Record<string, FeatureInfo>>(
     'feature_info',
     {},
@@ -92,13 +101,11 @@ export function setStores(model: DOMWidgetModel): void {
   );
 
   pds = createSyncedWidget<Record<string, OneWayPD>>('pds', {}, model);
+  pd_extent = createSyncedWidget<[number, number]>('pd_extent', [0, 0], model);
+
   ices = createSyncedWidget<Record<string, number[][]>>('ices', {}, model);
 
   feature_names = createSyncedWidget<string[]>('feature_names', [], model);
-
-  labels = createSyncedWidget<number[]>('labels', [], model);
-
-  height = createSyncedWidget<number>('height', 600, model);
 
   model_output_short = createSyncedWidget<string>(
     'model_output_short',
@@ -111,10 +118,18 @@ export function setStores(model: DOMWidgetModel): void {
     model
   );
 
+  height = createSyncedWidget<number>('height', 600, model);
+
+  drawn_pds = createSyncedWidget<Record<string, DrawnPD>>(
+    'drawn_pds',
+    {},
+    model
+  );
+
   // ==== Stores that are not synced with traitlets ====
 
   pageIndex = writable(0);
   selectedFeatures = writable([]);
-  drawnPDPs = writable({});
   nextButtonEnabled = writable(false);
+  pdExtentNice = derived(pd_extent, ($pd_extent) => getNiceDomain($pd_extent));
 }

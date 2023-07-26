@@ -109,6 +109,7 @@
               font-size={fontSize}
               fill="black"
               stroke-width={2}
+              class="tw-select-none"
               paint-order="stroke"
             >
               {format(tick)}

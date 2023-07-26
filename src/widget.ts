@@ -25,15 +25,17 @@ export class ExampleModel extends DOMWidgetModel {
       _view_module: ExampleModel.view_module,
       _view_module_version: ExampleModel.view_module_version,
       dataset: {},
+      labels: [],
       num_instances: 0,
       feature_info: {},
       pds: {},
+      pd_extent: [0, 0],
       ices: {},
       feature_names: [],
-      labels: [],
       model_output_short: '',
       model_output_long: '',
       height: 600,
+      drawn_pds: {},
     };
   }
 

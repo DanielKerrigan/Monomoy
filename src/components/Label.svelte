@@ -40,13 +40,11 @@
   {width}
   {height}
   fill="black"
-  class={bold ? 'tw-font-bold' : ''}
+  class="tw-select-none"
+  class:tw-font-bold={bold}
   font-size={fontSize}
   transform={rotate ? `rotate(270, ${x}, ${y})` : null}
 >
   <tspan dominant-baseline="hanging" text-anchor="middle" bind:this={tspan} />
   <title>{label}</title>
 </text>
-
-<style>
-</style>
