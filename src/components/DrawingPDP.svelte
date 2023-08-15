@@ -21,6 +21,8 @@
   const marginBottom = 32;
   const marginLeft = 56;
 
+  const markColor = '#155392';
+
   $: feature = $feature_info[pd.feature];
 
   $: x =
@@ -106,7 +108,7 @@
             cx={x(d.x)}
             cy={y(d.y)}
             r={radius}
-            fill="steelblue"
+            fill={markColor}
             pointer-events="none"
           />
         {/if}
@@ -117,7 +119,7 @@
       <path
         d={line($drawn_pds[pd.feature])}
         fill="none"
-        stroke="steelblue"
+        stroke={markColor}
         pointer-events="none"
       />
     {/if}

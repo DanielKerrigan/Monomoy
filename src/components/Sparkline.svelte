@@ -9,7 +9,7 @@
   export let showLine: boolean;
   export let showCircles: boolean;
   export let xScaleType: 'linear' | 'point';
-  export let colors = ['steelblue', 'crimson'];
+  export let colors = ['#155392', '#e65201'];
 
   const marginTop = 2;
   const marginRight = 2;

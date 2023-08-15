@@ -8,8 +8,8 @@
     pdExtentNice,
     feature_info,
   } from '../stores';
-  import DrawingPDP from './DrawingPDP.svelte';
-  import Sparkline from './Sparkline.svelte';
+  import DrawingPDP from '../components/DrawingPDP.svelte';
+  import Sparkline from '../components/Sparkline.svelte';
 
   let contentRect: DOMRectReadOnly | undefined;
   $: height = contentRect?.height ?? 0;
@@ -26,8 +26,8 @@
 
 <div class="tw-flex tw-h-full tw-w-full tw-flex-col tw-items-center tw-gap-8">
   <p class="tw-w-128">
-    For each feature, draw a chart that shows what you expect the relationship
-    to be between the values of the feature and {$model_output_long}.
+    For each feature, draw a chart that shows what you expect the average
+    relationship to be between the values of the feature and {$model_output_long}.
   </p>
   <div class="tw-flex tw-w-full tw-flex-1 tw-gap-16">
     <div class="tw-w-80 tw-rounded-md tw-bg-white tw-p-4">

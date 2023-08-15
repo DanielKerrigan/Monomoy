@@ -17,6 +17,9 @@
   const marginBottom = 32;
   const marginLeft = 56;
 
+  const userColor = '#155392';
+  const modelColor = '#e65201';
+
   $: feature = $feature_info[pd.feature];
 
   $: x =
@@ -73,8 +76,8 @@
             cx={x(d.x)}
             cy={y(d.y)}
             r={radius}
-            fill={feature.ordered ? 'steelblue' : 'none'}
-            stroke={feature.ordered ? 'none' : 'steelblue'}
+            fill={feature.ordered ? userColor : 'none'}
+            stroke={feature.ordered ? 'none' : userColor}
             stroke-width="2"
             pointer-events="none"
           />
@@ -86,7 +89,7 @@
       <path
         d={line(drawn)}
         fill="none"
-        stroke="steelblue"
+        stroke={userColor}
         stroke-width="2"
         pointer-events="none"
       />
@@ -101,8 +104,8 @@
             cx={x(d.x)}
             cy={y(d.y)}
             r={radius}
-            fill={feature.ordered ? 'crimson' : 'none'}
-            stroke={feature.ordered ? 'none' : 'crimson'}
+            fill={feature.ordered ? modelColor : 'none'}
+            stroke={feature.ordered ? 'none' : modelColor}
             stroke-width="2"
             pointer-events="none"
           />
@@ -115,7 +118,7 @@
         d={line(pdPoints)}
         fill="none"
         stroke-width="2"
-        stroke="crimson"
+        stroke={modelColor}
         pointer-events="none"
       />
     {/if}

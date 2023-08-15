@@ -15,9 +15,8 @@ from typing import Callable, List, Union
 import numpy as np
 import pandas as pd
 from ipywidgets import DOMWidget
-from traitlets import Dict, Int
+from traitlets import Dict, Int, Unicode, observe
 from traitlets import List as ListTraitlet
-from traitlets import Unicode
 
 from ._frontend import module_name, module_version
 from .data import get_initial_drawn_pds
@@ -53,6 +52,12 @@ class ExampleWidget(DOMWidget):
     height = Int(600).tag(sync=True)
 
     drawn_pds = Dict({}).tag(sync=True)
+
+    mental_model_file_path = Unicode("").tag(sync=True)
+    save_file_clicked = Int(0).tag(sync=True)
+    save_file_result = Dict({"num": 0, "error": ""}).tag(sync=True)
+
+    feature_importances = Dict({}).tag(sync=True)
 
     """
     The ice lines are a lot of data, so we want to limit how often we have to
@@ -104,6 +109,8 @@ class ExampleWidget(DOMWidget):
         self.model_output_short = data["model_output_short"]
         self.model_output_long = data["model_output_long"]
 
+        self.feature_importances = data["feature_importances"]
+
         self.height = height
 
         self.drawn_pds = get_initial_drawn_pds(self.pds)
@@ -112,3 +119,17 @@ class ExampleWidget(DOMWidget):
 
         self.df = df
         self.predict = predict
+
+    @observe("save_file_clicked")
+    def _on_save_file_clicked(self, change):
+        num = change["new"]
+
+        try:
+            path = Path(self.mental_model_file_path).resolve()
+            with open(path, "w", encoding="utf-8") as json_file:
+                json.dump({}, json_file)
+            error_message = ""
+        except OSError as error:
+            error_message = error.strerror
+
+        self.save_file_result = {"num": num, "error": error_message}

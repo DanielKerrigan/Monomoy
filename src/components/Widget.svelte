@@ -1,16 +1,22 @@
 <script lang="ts">
   import { height, pageIndex } from '../stores';
-  import FeatureSelectionPage from './FeatureSelectionPage.svelte';
-  import DrawingPage from './DrawingPage.svelte';
-  import IntroductionPage from './IntroductionPage.svelte';
-  import DrawingFeedbackPage from './DrawingFeedbackPage.svelte';
+  import FeatureImportanceSelectionPage from '../pages/FeatureImportanceSelectionPage.svelte';
+  import FeatureImportanceFeedbackPage from '../pages/FeatureImportanceFeedbackPage.svelte';
+  import DrawingPage from '../pages/DrawingPage.svelte';
+  import IntroductionPage from '../pages/IntroductionPage.svelte';
+  import DrawingFeedbackPage from '../pages/DrawingFeedbackPage.svelte';
   import Progress from './Progress.svelte';
+  import TransitionPage from '../pages/TransitionPage.svelte';
+  import SavePage from '../pages/SavePage.svelte';
 
   const pages = [
     IntroductionPage,
-    FeatureSelectionPage,
+    FeatureImportanceSelectionPage,
     DrawingPage,
+    TransitionPage,
+    FeatureImportanceFeedbackPage,
     DrawingFeedbackPage,
+    SavePage,
   ];
 </script>
 

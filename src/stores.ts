@@ -2,7 +2,13 @@ import { writable, derived } from 'svelte/store';
 import type { Writable, Readable } from 'svelte/store';
 import type { DOMWidgetModel } from '@jupyter-widgets/base';
 
-import type { Dataset, OneWayPD, FeatureInfo, DrawnPD } from './types';
+import type {
+  Dataset,
+  OneWayPD,
+  FeatureInfo,
+  DrawnPD,
+  FeatureImportances,
+} from './types';
 import { getNiceDomain } from './vis-utils';
 
 /**
@@ -74,6 +80,12 @@ export let height: Writable<number>;
 
 export let drawn_pds: Writable<Record<string, DrawnPD>>;
 
+export let mental_model_file_path: Writable<string>;
+export let save_file_clicked: Writable<number>;
+export let save_file_result: Writable<{ num: number; error: string }>;
+
+export let feature_importances: Writable<FeatureImportances>;
+
 // ==== Stores that are not synced with traitlets ====
 
 export let pageIndex: Writable<number>;
@@ -122,6 +134,26 @@ export function setStores(model: DOMWidgetModel): void {
 
   drawn_pds = createSyncedWidget<Record<string, DrawnPD>>(
     'drawn_pds',
+    {},
+    model
+  );
+
+  mental_model_file_path = createSyncedWidget<string>(
+    'mental_model_file_path',
+    '',
+    model
+  );
+
+  save_file_clicked = createSyncedWidget<number>('save_file_clicked', 0, model);
+
+  save_file_result = createSyncedWidget<{ num: number; error: string }>(
+    'save_file_result',
+    { num: 0, error: '' },
+    model
+  );
+
+  feature_importances = createSyncedWidget<FeatureImportances>(
+    'feature_importances',
     {},
     model
   );

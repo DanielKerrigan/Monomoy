@@ -21,6 +21,8 @@ export type OneHotFeatureInfo = {
   columns_and_values: [string, string][];
   value_to_column: Record<string, string>;
   value_map: Record<number, string>;
+  display: string;
+  description: string;
 };
 
 export type NominalFeatureInfo = {
@@ -30,6 +32,8 @@ export type NominalFeatureInfo = {
   values: number[];
   distribution: Distribution;
   value_map: Record<number, string>;
+  display: string;
+  description: string;
 };
 
 export type OrdinalFeatureInfo = {
@@ -39,6 +43,8 @@ export type OrdinalFeatureInfo = {
   values: number[];
   distribution: Distribution;
   value_map: Record<number, string>;
+  display: string;
+  description: string;
 };
 
 export type ContinuousFeatureInfo = {
@@ -47,6 +53,8 @@ export type ContinuousFeatureInfo = {
   ordered: true;
   values: number[];
   distribution: Distribution;
+  display: string;
+  description: string;
 };
 
 export type DiscreteFeatureInfo = {
@@ -55,6 +63,8 @@ export type DiscreteFeatureInfo = {
   ordered: true;
   values: number[];
   distribution: Distribution;
+  display: string;
+  description: string;
 };
 
 export type QuantitativeFeatureInfo =
@@ -80,3 +90,8 @@ export type OneWayPD = {
 };
 
 export type DrawnPD = { x: number; y: number; drawn: boolean }[];
+
+export type FeatureImportances = Record<
+  string,
+  { rank: number; score: number }
+>;

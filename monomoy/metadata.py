@@ -8,6 +8,7 @@ class Metadata:
     def __init__(
         self,
         df: pd.DataFrame,
+        data_dictionary: List[Dict],
         resolution: int,
         one_hot_features: Union[Dict[str, List[Tuple[str, str]]], None],
         nominal_features: Union[List[str], None],
@@ -84,7 +85,7 @@ class Metadata:
 
         self.feature_info = {}
 
-        for feature, one_hot_info in one_hot_features.items():
+        for feature, one_hot_info in sorted(one_hot_features.items()):
             bins = []
             counts = []
             for i, (col, _) in enumerate(one_hot_info):
@@ -118,7 +119,8 @@ class Metadata:
                 "value_map": feature_value_mappings.get(feature, {}),
             }
 
-        for feature in nominal_features:
+        # sorting for consistent JSON output for a given random seed
+        for feature in sorted(nominal_features):
             bins, counts = np.unique(df[feature], return_counts=True)
 
             order = np.argsort(-counts)
@@ -140,7 +142,7 @@ class Metadata:
                 "value_map": feature_value_mappings.get(feature, {}),
             }
 
-        for feature in ordinal_features:
+        for feature in sorted(ordinal_features):
             bins, counts = np.unique(df[feature], return_counts=True)
             percents = counts / np.sum(counts)
             self.feature_info[feature] = {
@@ -156,7 +158,7 @@ class Metadata:
                 "value_map": feature_value_mappings.get(feature, {}),
             }
 
-        for feature in quantitative_features:
+        for feature in sorted(quantitative_features):
             unique_vals = unique_feature_vals[feature]
             n_unique = len(unique_vals)
 
@@ -169,17 +171,22 @@ class Metadata:
             if np.issubdtype(df[feature].dtype, np.integer) or np.array_equal(
                 df[feature], df[feature].astype(int)
             ):
-                if resolution < n_unique:
-                    min_val, max_val = int(unique_vals[0]), int(unique_vals[-1])
-                    n_points = (max_val - min_val) + 1
-                    values = np.arange(
-                        min_val, max_val + 1, round(n_points / resolution)
-                    ).tolist()
-                    # TODO: can this be done in a smarter way? something similar to
-                    # how d3 does the ticks?
-                    values[-1] = max_val
-                else:
-                    values = unique_vals
+                min_val, max_val = int(unique_vals[0]), int(unique_vals[-1])
+                n_points = (max_val - min_val) + 1
+
+                if n_points < resolution:
+                    print(
+                        f'Integer feature "{feature}" has {n_unique} unique values in the range [{min_val},{max_val}], but the resolution is set to {resolution}. {n_points} values will be used.'
+                    )
+
+                values = np.arange(
+                    min_val, max_val + 1, max(1, round(n_points / resolution))
+                ).tolist()
+                # TODO: can this be done in a smarter way? something similar to
+                # how d3 does the ticks?
+                if values[-1] != max_val:
+                    values.append(max_val)
+
                 self.feature_info[feature] = {
                     "kind": "quantitative",
                     "subkind": "discrete",
@@ -192,11 +199,9 @@ class Metadata:
                     },
                 }
             else:
-                values = (
-                    np.linspace(unique_vals[0], unique_vals[-1], resolution).tolist()
-                    if resolution < n_unique
-                    else unique_vals
-                )
+                values = np.linspace(
+                    unique_vals[0], unique_vals[-1], resolution
+                ).tolist()
 
                 self.feature_info[feature] = {
                     "kind": "quantitative",
@@ -209,3 +214,8 @@ class Metadata:
                         "percents": percents.tolist(),
                     },
                 }
+
+        for entry in data_dictionary:
+            info = self.feature_info[entry["feature_model"]]
+            info["display"] = entry["feature_ui"]
+            info["description"] = entry["feature_description"]

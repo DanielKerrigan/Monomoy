@@ -2,11 +2,12 @@
 # coding: utf-8
 
 """
-Compute partial dependence plots
+Compute data needed by the widget.
 """
 
 import json
 import math
+from operator import itemgetter
 from pathlib import Path
 from typing import Callable, Dict, List, Tuple, Union
 
@@ -26,11 +27,13 @@ def compute_widget_data(
     features: List[str],
     model_output_short: str,
     model_output_long: str,
-    resolution: int = 20,
+    data_dictionary: Union[List[Dict], Path, str],
+    pdp_resolution: int = 20,
     one_hot_features: Union[Dict[str, List[Tuple[str, str]]], None] = None,
     nominal_features: Union[List[str], None] = None,
     ordinal_features: Union[List[str], None] = None,
     feature_value_mappings: Union[Dict[str, Dict[str, str]], None] = None,
+    feature_importances: Union[Tuple[str, float], None] = None,
     n_jobs: int = 1,
     output_path: Union[str, None] = None,
 ) -> Union[dict, None]:
@@ -39,18 +42,34 @@ def compute_widget_data(
     to rank the plots by, and clustering the lines within
     each ICE plot.
 
-    :param predict: A function whose input is a DataFrame of instances and
-        returns the model's predictions on those instances.
+    :param predict: A function whose input is a pandas DataFrame of instances and
+        returns the model's predictions on those instances in a numpy array.
     :type predict: Callable[[pd.DataFrame], list[float]]
-    :param df: Instances to use to compute the PDPs and ICE plots.
+    :param df: Instances in the dataset, excluding their labels.
     :type df: pd.DataFrame
-    :param features: List of feature names to compute the plots for.
+    :param features: List of the names of features to use.
     :type features: list[str]
-    :param resolution: For quantitative features, the number of evenly
-        spaced to use to compute the plots, defaults to 20.
-    :type resolution: int, optional
+    :param model_output_short: A short description of the model's output or target.
+        This will be used as an axis label on a chart, for example.
+    :type model_output_short: str
+    :param model_output_long: A longer description of the model's output or target.
+        This will be used to explain to the user the purpose of the model that they
+        are analyzing.
+    :type model_output_long: str
+    :param data_dictionary: Descriptions for each feature. This can either be set as
+        a list of dictionaries (one dict per feature) or a path to a CSV file
+        (one row per feature). The keys of the dictionaries or the columns of the CSV must
+        include "feature_model" and "feature_description". "feature_model" should contain
+        the name of the feature in the model. "feature_description" should contain an
+        explaination of what that feature is. A third, optional field is "feature_ui", which
+        should contain a short name for the feature to show in the user interface in place
+        of the name in "feature_model".
+    :type data_dictionary: list[dict] | Path | str | None, optional
+    :param pdp_resolution: For quantitative features, the number of evenly
+        spaced to use to compute the partial dependence plots, defaults to 20.
+    :type pdp_resolution: int, optional
     :param one_hot_features: A dictionary that maps from the name of a feature
-        to a list tuples containg the corresponding one-hot encoded column
+        to a list tuples containing the corresponding one-hot encoded column
         names and feature values, defaults to None.
     :type one_hot_features: dict[str, list[tuple[str, str]]] | None, optional
     :param nominal_features: List of nominal and binary features in the
@@ -62,18 +81,13 @@ def compute_widget_data(
     :type ordinal_features: list[str] | None, optional
     :param feature_value_mappings: Nested dictionary that maps from the name
         of a nominal or ordinal feature, to a value for that feature in
-        the dataset, to the desired label for that value in the UI,
+        the dataset, to the desired label for that value in the user interface,
         defaults to None.
     :type feature_value_mappings: dict[str, dict[str, str]] | None, optional
-    :param num_clusters_extent: The minimum and maximum number of clusters to
-        try when clustering the lines of ICE plots. Defaults to (2, 5).
-    :type num_clusters_extent: tuple[int, int]
-    :param mixed_shape_tolerance: Quantitative and ordinal one-way PDPs are labeled
-        as having positive, negative, or mixed shapes. A lower value for this parameter
-        leads to more PDPs being labeled as positive or negative and fewer being
-        labeled as mixed. A higher value leads to more being labeled as mixed.
-        Must be in the range [0, 0.5]. Defaults to 0.15.
-    :type mixed_shape_tolerance: float
+    :param feature_importances: Dictionary that maps from the name of the feature to
+        its importance score. If None, importance scores are calculated based on the
+        amount of variance in the ICE lines.
+    :type feature_importances: dict[str, dict[str, str]] | None, optional
     :param n_jobs: Number of jobs to use to parallelize computation,
         defaults to 1.
     :type n_jobs: int, optional
@@ -83,6 +97,8 @@ def compute_widget_data(
         If None, then the results are instead returned.
     :type output_path: str | None, optional
     :raises OSError: Raised when the ``output_path``, if provided, cannot be written to.
+    :raises KeyError: Raised when the ``data_dictionary`` is missing a required key.
+    :raises ValueError: Raised when the ``data_dictionary`` is missing a required value.
     :return: Wigdet data, or None if an ``output_path`` is provided.
     :rtype: dict | None
     """
@@ -95,9 +111,12 @@ def compute_widget_data(
         if not path.parent.is_dir():
             raise OSError(f"Cannot write to {path.parent}")
 
+    data_dictionary = _parse_data_dictionary(data_dictionary)
+
     md = Metadata(
         df,
-        resolution,
+        data_dictionary,
+        pdp_resolution,
         one_hot_features,
         nominal_features,
         ordinal_features,
@@ -151,6 +170,22 @@ def compute_widget_data(
     # turn one-hot encoded features into integer encoded categories
     frontend_df = _turn_one_hot_into_category(subset, md)
 
+    if feature_importances is None:
+        feature_importances = [
+            (feature, pds[feature]["deviation"]) for feature in features
+        ]
+
+    feature_importances = sorted(
+        feature_importances,
+        key=itemgetter(1),
+        reverse=True,
+    )
+
+    feature_importances = {
+        feature: {"rank": rank + 1, "score": score}
+        for rank, (feature, score) in enumerate(feature_importances)
+    }
+
     # output
 
     results = {
@@ -162,6 +197,7 @@ def compute_widget_data(
         "ices": ices,
         "model_output_short": model_output_short,
         "model_output_long": model_output_long,
+        "feature_importances": feature_importances,
     }
 
     if output_path:
@@ -177,6 +213,7 @@ def _calc_one_way_pd(
     feature,
     md,
 ):
+    """Calculate one-way PDP and ICE plots."""
     feat_info = md.feature_info[feature]
 
     ice_lines = []
@@ -212,6 +249,7 @@ def _calc_one_way_pd(
 
 
 def _set_feature(feature, value, data, feature_info):
+    """Set all instances in data to have the given value for the given feature."""
     if feature_info["subkind"] == "one_hot":
         col = feature_info["value_to_column"][feature_info["value_map"][value]]
         all_features = [feat for feat, _ in feature_info["columns_and_values"]]
@@ -235,6 +273,7 @@ def _reset_feature(
 
 
 def _turn_one_hot_into_category(df_one_hot, md):
+    """convert one-hot features back into categories"""
     df = df_one_hot.copy()
 
     for feature in md.one_hot_feature_names:
@@ -257,9 +296,41 @@ def _turn_one_hot_into_category(df_one_hot, md):
 
 
 def get_initial_drawn_pds(pds):
+    """get initially empty drawn pdps"""
     results = {}
 
     for feature, owp in pds.items():
         results[feature] = [{"x": x, "y": 0, "drawn": False} for x in owp["x_values"]]
 
     return results
+
+
+def _parse_data_dictionary(data_dictionary):
+    """read the file for the data dictionary (if it is a file),
+    check that the required keys and values are there set the
+    feature_ui key if needed"""
+    # read the data dictionary
+    if isinstance(data_dictionary, Path) or isinstance(data_dictionary, str):
+        path = Path(data_dictionary).resolve()
+
+        if not path.exists():
+            raise OSError(f"Cannot read {path}")
+
+        data_dictionary = pd.read_csv(path, na_filter=False).to_dict("records")
+
+    data_dictionary = [entry.copy() for entry in data_dictionary]
+
+    for feature_entry in data_dictionary:
+        for key in ["feature_model", "feature_description"]:
+            if key not in feature_entry:
+                raise KeyError(
+                    f"The {key} key is not in the data dictionary: {feature_entry}"
+                )
+            if not feature_entry[key]:
+                raise ValueError(
+                    f"This data dictionary entry is missing a value for {key}: {feature_entry}"
+                )
+        if not feature_entry.get("feature_ui"):
+            feature_entry["feature_ui"] = feature_entry["feature_model"]
+
+    return data_dictionary

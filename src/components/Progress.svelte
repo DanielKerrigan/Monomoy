@@ -34,6 +34,7 @@
   </div>
   <button
     disabled={!$nextButtonEnabled}
+    class:tw-invisible={$pageIndex === numSteps - 1}
     on:click={() => ($pageIndex = $pageIndex + 1)}
     class="tw-rounded-md tw-bg-indigo-600 tw-px-2 tw-py-1 tw-text-white hover:tw-bg-indigo-700 active:tw-bg-indigo-800 disabled:tw-cursor-not-allowed disabled:tw-bg-gray-300"
     >Next</button

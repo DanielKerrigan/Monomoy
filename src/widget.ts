@@ -36,6 +36,10 @@ export class ExampleModel extends DOMWidgetModel {
       model_output_long: '',
       height: 600,
       drawn_pds: {},
+      mental_model_file_path: '',
+      save_file_clicked: 0,
+      save_file_result: { num: 0, error: '' },
+      feature_importances: {},
     };
   }
 
