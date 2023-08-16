@@ -58,6 +58,7 @@ class ExampleWidget(DOMWidget):
     save_file_result = Dict({"num": 0, "error": ""}).tag(sync=True)
 
     feature_importances = Dict({}).tag(sync=True)
+    constraints = Dict({}).tag(sync=True)
 
     """
     The ice lines are a lot of data, so we want to limit how often we have to
@@ -114,6 +115,8 @@ class ExampleWidget(DOMWidget):
         self.height = height
 
         self.drawn_pds = get_initial_drawn_pds(self.pds)
+
+        self.constraints = {feature: "" for feature in self.feature_names}
 
         # not synced
 

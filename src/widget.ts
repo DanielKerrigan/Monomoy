@@ -40,6 +40,7 @@ export class ExampleModel extends DOMWidgetModel {
       save_file_clicked: 0,
       save_file_result: { num: 0, error: '' },
       feature_importances: {},
+      constrains: {},
     };
   }
 

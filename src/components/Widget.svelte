@@ -8,11 +8,13 @@
   import Progress from './Progress.svelte';
   import TransitionPage from '../pages/TransitionPage.svelte';
   import SavePage from '../pages/SavePage.svelte';
+  import ConstraintsSelectionPage from '../pages/ConstraintsSelectionPage.svelte';
 
   const pages = [
     IntroductionPage,
     FeatureImportanceSelectionPage,
     DrawingPage,
+    ConstraintsSelectionPage,
     TransitionPage,
     FeatureImportanceFeedbackPage,
     DrawingFeedbackPage,

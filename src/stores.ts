@@ -86,6 +86,10 @@ export let save_file_result: Writable<{ num: number; error: string }>;
 
 export let feature_importances: Writable<FeatureImportances>;
 
+export let constraints: Writable<
+  Record<string, '' | 'increasing' | 'decreasing'>
+>;
+
 // ==== Stores that are not synced with traitlets ====
 
 export let pageIndex: Writable<number>;
@@ -157,6 +161,10 @@ export function setStores(model: DOMWidgetModel): void {
     {},
     model
   );
+
+  constraints = createSyncedWidget<
+    Record<string, '' | 'increasing' | 'decreasing'>
+  >('constraints', {}, model);
 
   // ==== Stores that are not synced with traitlets ====
 
