@@ -44,8 +44,8 @@
             isViewed[feature] = true;
           }}
         >
-          <div class="tw-truncate">
-            {feature}
+          <div class="tw-truncate" title={$feature_info[feature].display}>
+            {$feature_info[feature].display}
           </div>
           <div class="tw-ml-auto tw-flex-none">
             <Sparkline

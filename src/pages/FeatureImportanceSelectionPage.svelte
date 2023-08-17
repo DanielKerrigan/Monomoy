@@ -80,7 +80,9 @@
                 />
               </svg>
             </button>
-            <div class="tw-truncate">{info.display}</div>
+            <div class="tw-truncate" title={info.display}>
+              {info.display}
+            </div>
             <div>{info.description}</div>
           {/if}
         {/each}
@@ -92,7 +94,10 @@
         {#each $selected_features as feature, i (feature)}
           <div class="tw-flex tw-items-center tw-justify-start">
             <div>{i + 1}.</div>
-            <div class="tw-ml-1 tw-truncate">
+            <div
+              class="tw-ml-1 tw-truncate"
+              title={$feature_info[feature].display}
+            >
               {$feature_info[feature].display}
             </div>
 

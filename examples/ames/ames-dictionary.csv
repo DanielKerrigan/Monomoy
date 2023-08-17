@@ -1,0 +1,79 @@
+feature_model,feature_ui,feature_description
+Zoning,,Identifies the general zoning classification of the sale.
+Lot Frontage,,Linear feet of street connected to property
+Lot Area,,Lot size in square feet
+Street,,Type of road access to property
+Alley,,Type of alley access to property
+Lot Shape,,General shape of property
+Land Contour,,Flatness of the property
+Utilities,,Type of utilities available
+Lot Configuration,,"E.g. indide lot, corner lot, Cul-de-sac, etc."
+Land Slope,,Slope of property
+Neighborhood,,Physical locations within Ames city limits
+Condition 1,,"Proximity to various conditions, like parks or railroads"
+Condition 2,,Proximity to various conditions (if more than one is present)
+Building Type,,"Type of dwelling (single family, duplex, townhouse, etc.)"
+House Style,,"Style of dwelling (1 story, 2 story, etc.)"
+Overall Quality,,Rates the overall material and finish of the house
+Overall Condition,,Rates the overall condition of the house
+Year Built,,Original construction date
+Year Remodel,,Remodel date (same as construction date if no remodeling or additions)
+Roof Style,,Type of roof
+Roof Material,,Roof material
+Exterior 1st,,Exterior covering on house
+Exterior 2nd,,Exterior covering on house (if more than one material)
+Masonry Veneer,,Masonry veneer type
+Masonry Veneer Area,,Masonry veneer area in square feet
+Exterior Quality,,Evaluates the quality of the material on the exterior
+Exterior Condition,,Evaluates the present condition of the material on the exterior
+Foundation,,Type of foundation
+Basement Height,,Height of the basement in inches
+Basement Condition,,Evaluates the general condition of the basement
+Basement Exposure,,Refers to walkout or garden level walls
+Basement Finish Rating 1,,Rating of basement finished area
+Basement Finish Area 1,,Type 1 finished square feet
+Basement Finish Rating 2,,Rating of basement finished area (if multiple types)
+Basement Finish Area 2,,Type 2 finished square feet
+Basement Unfinished Area,,Unfinished square feet of basement are
+Total Basement Area,,Total square feet of basement area
+Heating,,Type of heating
+Heating Quality,,Heating quality and condition
+Central Air,,Central air conditioning
+Electrical,,Electrical system
+1st Floor Area,,First Floor square feet
+2nd Floor Area,,Second floor square feet
+Low Quality Finished Area,,Low quality finished square feet (all floors)
+Above Ground Living Area,,Above grade (ground) living area square feet
+Basement Full Baths,,Basement full bathrooms
+Basement Half Baths,,Basement half bathrooms
+Full Baths,,Full bathrooms above grade
+Half Baths,,Half baths above grade
+Bedrooms Above Ground,,Bedrooms above grade (does NOT include basement bedrooms)
+Kitchens Above Ground,,Kitchens above grade
+Kitchen Quality,,Kitchen quality
+Rooms Above Ground,,Total rooms above grade (does not include bathrooms)
+Functionality,,Home functionality (Assume typical unless deductions are warranted)
+Fireplaces,,Number of fireplaces
+Fireplace Quality,,Fireplace quality
+Garage Type,,Garage location
+Garage Year,,Year garage was built (same as year the house was built if no garage)
+Garage Finish,,Interior finish of the garage
+Garage Cars,,Size of garage in car capacity
+Garage Area,,Size of garage in square feet
+Garage Quality,,Garage quality
+Garage Condition,,Garage condition
+Paved Driveway,,"Paved, partial pavement, or dirt driveway"
+Wood Deck Area,,Wood deck area in square feet
+Open Porch Area,,Open porch area in square feet
+Enclosed Porch Area,,Enclosed porch area in square feet
+3 Season Porch Area,,Three season porch area in square feet
+Screen Porch Area,,Screen porch area in square feet
+Pool Area,,Pool area in square feet
+Pool Quality,,Pool quality
+Fence,,Fence quality
+Misc Feature,,Miscellaneous feature not covered in other categories
+Misc Value,,$Value of miscellaneous feature
+Month Sold,,Month Sold (MM)
+Year Sold,,Year Sold (YYYY)
+Sale Type,,Type of sale
+Sale Condition,,Condition of sale

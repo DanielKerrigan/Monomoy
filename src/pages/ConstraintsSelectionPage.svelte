@@ -88,7 +88,7 @@
       {#each orderedFeatures as feature}
         {@const info = $feature_info[feature]}
         {#if matchesSearch(info, searchValue)}
-          <div class="tw-truncate">{info.display}</div>
+          <div class="tw-truncate" title={info.display}>{info.display}</div>
           <div>{info.description}</div>
           <div>
             {#if $selected_features.includes(feature)}

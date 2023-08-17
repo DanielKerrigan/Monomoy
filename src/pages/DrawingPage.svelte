@@ -38,8 +38,8 @@
           class:tw-bg-indigo-100={feature === currentFeature}
           on:click={() => (currentFeature = feature)}
         >
-          <div class="tw-truncate">
-            {feature}
+          <div class="tw-truncate" title={$feature_info[feature].display}>
+            {$feature_info[feature].display}
           </div>
           {#if isDrawn[feature]}
             <div class="tw-ml-auto tw-flex-none">
