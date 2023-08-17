@@ -54,7 +54,7 @@
   <XAxis
     scale={x}
     y={height - marginBottom}
-    label={pd.feature}
+    label={feature.display}
     gridHeight={-(height - marginBottom - marginTop)}
     integerOnly={feature.subkind === 'discrete'}
     value_map={'value_map' in feature ? feature.value_map : {}}

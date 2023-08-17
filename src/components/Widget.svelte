@@ -9,6 +9,7 @@
   import TransitionPage from '../pages/TransitionPage.svelte';
   import SavePage from '../pages/SavePage.svelte';
   import ConstraintsSelectionPage from '../pages/ConstraintsSelectionPage.svelte';
+  import ConstraintsFeedbackPage from '../pages/ConstraintsFeedbackPage.svelte';
 
   const pages = [
     IntroductionPage,
@@ -18,6 +19,7 @@
     TransitionPage,
     FeatureImportanceFeedbackPage,
     DrawingFeedbackPage,
+    ConstraintsFeedbackPage,
     SavePage,
   ];
 </script>

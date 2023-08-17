@@ -95,3 +95,20 @@ export type FeatureImportances = Record<
   string,
   { rank: number; score: number }
 >;
+
+export type ConstraintFeedback = {
+  feature: string;
+  direction: string;
+  satisfies: number[];
+  unsatisfies: number[];
+  explaining_features: string[];
+};
+
+export type RaincloudData = {
+  values: { value: number; label: number }[];
+  densities: {
+    x: number;
+    density: number;
+  }[];
+  mean: number;
+};

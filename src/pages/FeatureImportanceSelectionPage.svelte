@@ -1,7 +1,7 @@
 <script lang="ts">
   import {
     feature_names,
-    selectedFeatures,
+    selected_features,
     nextButtonEnabled,
     model_output_long,
     feature_info,
@@ -10,24 +10,24 @@
 
   let searchValue = '';
 
-  $: $nextButtonEnabled = $selectedFeatures.length > 0;
+  $: $nextButtonEnabled = $selected_features.length > 0;
 
   function addFeature(feature: string) {
-    $selectedFeatures = [...$selectedFeatures, feature];
+    $selected_features = [...$selected_features, feature];
   }
 
   function removeFeature(idx: number) {
-    const selected = $selectedFeatures.slice();
+    const selected = $selected_features.slice();
     selected.splice(idx, 1);
-    $selectedFeatures = selected;
+    $selected_features = selected;
   }
 
   function reorderFeature(feature: string, oldIdx: number, newIdx: number) {
-    const selected = $selectedFeatures.slice();
+    const selected = $selected_features.slice();
     const swappedFeature = selected[newIdx];
     selected[newIdx] = feature;
     selected[oldIdx] = swappedFeature;
-    $selectedFeatures = selected;
+    $selected_features = selected;
   }
 
   function matchesSearch(info: FeatureInfo, searchValue: string): boolean {
@@ -66,7 +66,7 @@
           {#if matchesSearch(info, searchValue)}
             <button
               class="tw-flex tw-items-center tw-justify-center tw-rounded-full tw-border-none tw-text-black hover:tw-bg-indigo-100 active:tw-bg-indigo-200 disabled:tw-cursor-not-allowed disabled:tw-text-gray-300 hover:disabled:tw-bg-transparent"
-              disabled={$selectedFeatures.includes(feature)}
+              disabled={$selected_features.includes(feature)}
               on:click={() => addFeature(feature)}
             >
               <svg
@@ -89,7 +89,7 @@
 
     <div class="tw-flex tw-w-80 tw-flex-col tw-rounded-lg tw-bg-white tw-p-4">
       <div>
-        {#each $selectedFeatures as feature, i (feature)}
+        {#each $selected_features as feature, i (feature)}
           <div class="tw-flex tw-items-center tw-justify-start">
             <div>{i + 1}.</div>
             <div class="tw-ml-1 tw-truncate">
@@ -116,7 +116,7 @@
             </button>
             <button
               class="tw-flex tw-flex-none tw-items-center tw-justify-center tw-rounded-full tw-border-none tw-text-black hover:tw-bg-indigo-100 active:tw-bg-indigo-200 disabled:tw-cursor-not-allowed disabled:tw-text-gray-300 hover:disabled:tw-bg-transparent"
-              disabled={i === $selectedFeatures.length - 1}
+              disabled={i === $selected_features.length - 1}
               on:click={() => reorderFeature(feature, i, i + 1)}
             >
               <svg

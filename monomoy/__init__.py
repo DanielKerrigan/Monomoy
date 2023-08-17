@@ -4,7 +4,7 @@
 # Copyright (c) me.
 # Distributed under the terms of the Modified BSD License.
 
-from .widget import ExampleWidget
+from .widget import ElicitationWidget
 from .data import compute_widget_data
 from ._version import __version__, version_info
 

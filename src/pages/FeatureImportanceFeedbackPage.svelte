@@ -1,6 +1,6 @@
 <script lang="ts">
   import {
-    selectedFeatures,
+    selected_features,
     nextButtonEnabled,
     feature_info,
     feature_importances,
@@ -24,7 +24,7 @@
 
 <div class="tw-flex tw-h-full tw-w-full tw-flex-col tw-items-center tw-gap-8">
   <div
-    class="tw-flex tw-min-h-0 tw-flex-1 tw-flex-col tw-items-center tw-gap-4"
+    class="tw-flex tw-min-h-0 tw-flex-initial tw-flex-col tw-items-center tw-gap-4"
   >
     <p class="tw-w-128 tw-flex-none">
       The table below shows the features that you indicated are most important.
@@ -56,7 +56,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each $selectedFeatures as feature, i}
+          {#each $selected_features as feature, i}
             {@const info = $feature_info[feature]}
             {@const importance = $feature_importances[feature]}
             <tr>
@@ -79,7 +79,7 @@
   </div>
 
   <div
-    class="tw-flex tw-min-h-0 tw-flex-1 tw-flex-col tw-items-center tw-gap-4"
+    class="tw-flex tw-min-h-0 tw-flex-initial tw-flex-col tw-items-center tw-gap-4"
   >
     <p class="tw-w-128 tw-flex-none">
       This table shows the features ranked by their importance to the model.

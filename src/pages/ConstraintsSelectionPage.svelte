@@ -3,13 +3,17 @@
   import SegmentedButton from '../components/SegmentedButton.svelte';
   import {
     feature_names,
-    selectedFeatures,
+    selected_features,
     nextButtonEnabled,
     feature_info,
     model_output_short,
     constraints,
+    drawn_pds,
+    pdExtentNice,
   } from '../stores';
   import type { FeatureInfo } from '../types';
+  import { pairs } from 'd3-array';
+  import Sparkline from '../components/Sparkline.svelte';
 
   $nextButtonEnabled = true;
 
@@ -21,12 +25,32 @@
   ];
 
   $: orderedFeatures = [
-    ...$selectedFeatures,
-    ...$feature_names.filter((f) => !$selectedFeatures.includes(f)),
+    ...$selected_features,
+    ...$feature_names.filter((f) => !$selected_features.includes(f)),
   ].filter((f) => $feature_info[f].ordered);
 
-  const values: Record<string, '' | 'increasing' | 'decreasing'> =
-    Object.fromEntries($feature_names.map((f) => [f, '']));
+  let values: Record<string, '' | 'increasing' | 'decreasing'>;
+  $: values = Object.fromEntries(
+    orderedFeatures.map((f) => {
+      if (!$selected_features.includes(f)) {
+        return [f, ''];
+      }
+
+      const pd = $drawn_pds[f].map((d) => d.y);
+      const diff = pairs(pd, (a, b) => b - a);
+
+      const increasing = diff.every((d) => d >= 0);
+      const decreasing = diff.every((d) => d <= 0);
+
+      const direction = increasing
+        ? 'increasing'
+        : decreasing
+        ? 'decreasing'
+        : '';
+
+      return [f, direction];
+    })
+  );
 
   function matchesSearch(info: FeatureInfo, searchValue: string): boolean {
     const searchLower = searchValue.toLowerCase();
@@ -59,13 +83,26 @@
       />
     </div>
     <div
-      class="tw-grid tw-flex-1 tw-auto-rows-min tw-grid-cols-[144px_1fr_max-content] tw-items-center tw-gap-2 tw-overflow-auto"
+      class="tw-grid tw-flex-1 tw-auto-rows-min tw-grid-cols-[144px_1fr_48px_max-content] tw-items-center tw-gap-2 tw-overflow-auto"
     >
       {#each orderedFeatures as feature}
         {@const info = $feature_info[feature]}
         {#if matchesSearch(info, searchValue)}
           <div class="tw-truncate">{info.display}</div>
           <div>{info.description}</div>
+          <div>
+            {#if $selected_features.includes(feature)}
+              <Sparkline
+                lines={[$drawn_pds[feature]]}
+                yDomain={$pdExtentNice}
+                showCircles={false}
+                showLine={true}
+                xScaleType={$feature_info[feature].kind === 'categorical'
+                  ? 'point'
+                  : 'linear'}
+              />
+            {/if}
+          </div>
           <SegmentedButton
             bind:selectedValue={values[feature]}
             {segments}

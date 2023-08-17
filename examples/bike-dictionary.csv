@@ -4,7 +4,7 @@ season,,Season of the year.
 mnth,month,Month of the year.
 hr,hour,Hour of the day.
 holiday,is holiday,Whether or not the day is a holiday.
-weekday,is weekday,Whether or not it is a weekday.
+weekday,,Day of the week.
 workingday,is working day,Whether or not it is a working day.
 weathersit,weather,The weather situation.
 temp,temperature,The normalized temperature.

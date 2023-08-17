@@ -7,6 +7,7 @@ Compute data needed by the widget.
 
 import json
 import math
+from collections import defaultdict
 from operator import itemgetter
 from pathlib import Path
 from typing import Callable, Dict, List, Tuple, Union
@@ -14,6 +15,7 @@ from typing import Callable, Dict, List, Tuple, Union
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
+from sklearn.tree import DecisionTreeClassifier
 from tqdm import tqdm
 
 from monomoy.metadata import Metadata
@@ -198,6 +200,7 @@ def compute_widget_data(
         "model_output_short": model_output_short,
         "model_output_long": model_output_long,
         "feature_importances": feature_importances,
+        "one_hot_encoded_col_name_to_feature": md.one_hot_encoded_col_name_to_feature,
     }
 
     if output_path:
@@ -303,6 +306,66 @@ def get_initial_drawn_pds(pds):
         results[feature] = [{"x": x, "y": 0, "drawn": False} for x in owp["x_values"]]
 
     return results
+
+
+def check_constraints(
+    constraints, ices, df, one_hot_encoded_col_name_to_feature, random_state
+):
+    """check if the user's constraints are satisfied"""
+    feedback = []
+
+    for feature, constraint in constraints.items():
+        if constraint == "":
+            continue
+
+        ice = ices[feature]
+
+        diff = np.diff(ice)
+
+        if constraint == "increasing":
+            is_satisfied = np.all(diff >= 0, axis=1)
+        else:
+            is_satisfied = np.all(diff <= 0, axis=1)
+
+        satisfies = np.nonzero(is_satisfied)[0].tolist()
+        unsatisfies = np.nonzero(~is_satisfied)[0].tolist()
+
+        feedback.append(
+            {
+                "feature": feature,
+                "direction": constraint,
+                "satisfies": satisfies,
+                "unsatisfies": unsatisfies,
+                "explaining_features": _get_explaining_features(
+                    df, is_satisfied, one_hot_encoded_col_name_to_feature, random_state
+                ),
+            }
+        )
+
+    return feedback
+
+
+def _get_explaining_features(X, y, one_hot_encoded_col_name_to_feature, random_state):
+    y_sum = y.sum()
+    if y_sum == 0 or y_sum == y.size:
+        return []
+
+    clf = DecisionTreeClassifier(
+        max_depth=3, ccp_alpha=0.01, random_state=random_state, class_weight="balanced"
+    )
+    clf.fit(X, y)
+
+    importances = defaultdict(int)
+
+    for i in clf.tree_.feature:
+        feat = one_hot_encoded_col_name_to_feature.get(X.columns[i], X.columns[i])
+        importances[feat] += clf.feature_importances_[i]
+
+    sorted_features = [
+        f for f, _ in sorted(importances.items(), key=itemgetter(1), reverse=True)
+    ]
+
+    return sorted_features
 
 
 def _parse_data_dictionary(data_dictionary):

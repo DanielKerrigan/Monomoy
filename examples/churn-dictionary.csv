@@ -1,0 +1,16 @@
+feature_model,feature_ui,feature_description
+account length,,length of customer's account
+area code,,customer's area code
+international plan,,whether or not the customer has an international plan
+voice mail plan,,whether or not the customer has a voice mail plan
+number vmail messages,,number of voicemail messages
+total day minutes,,total daytime call minutes
+total day calls,,number of day time calls
+total eve minutes,,total evening call minutes
+total eve calls,,number of evening calls
+total night minutes,,total night call minutes
+total night calls,,number of night calls
+total intl minutes,,total international call minutes
+total intl calls,,number of international calls
+total intl charge,,total international charge
+number customer service calls,,number of customer service calls

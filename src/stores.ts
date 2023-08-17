@@ -8,6 +8,7 @@ import type {
   FeatureInfo,
   DrawnPD,
   FeatureImportances,
+  ConstraintFeedback,
 } from './types';
 import { getNiceDomain } from './vis-utils';
 
@@ -90,10 +91,13 @@ export let constraints: Writable<
   Record<string, '' | 'increasing' | 'decreasing'>
 >;
 
+export let constraints_feedback: Writable<ConstraintFeedback[]>;
+
+export let selected_features: Writable<string[]>;
+
 // ==== Stores that are not synced with traitlets ====
 
 export let pageIndex: Writable<number>;
-export let selectedFeatures: Writable<string[]>;
 export let nextButtonEnabled: Writable<boolean>;
 export let pdExtentNice: Readable<[number, number]>;
 
@@ -166,10 +170,21 @@ export function setStores(model: DOMWidgetModel): void {
     Record<string, '' | 'increasing' | 'decreasing'>
   >('constraints', {}, model);
 
+  constraints_feedback = createSyncedWidget<ConstraintFeedback[]>(
+    'constraints_feedback',
+    [],
+    model
+  );
+
+  selected_features = createSyncedWidget<string[]>(
+    'selected_features',
+    [],
+    model
+  );
+
   // ==== Stores that are not synced with traitlets ====
 
   pageIndex = writable(0);
-  selectedFeatures = writable([]);
   nextButtonEnabled = writable(false);
   pdExtentNice = derived(pd_extent, ($pd_extent) => getNiceDomain($pd_extent));
 }

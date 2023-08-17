@@ -1,6 +1,6 @@
 <script lang="ts">
   import {
-    selectedFeatures,
+    selected_features,
     pds,
     drawn_pds,
     nextButtonEnabled,
@@ -16,13 +16,13 @@
   $: height = contentRect?.height ?? 0;
   $: width = contentRect?.width ?? 0;
 
-  let currentFeature = $selectedFeatures[0];
+  let currentFeature = $selected_features[0];
 
   let isViewed = Object.fromEntries(
-    $selectedFeatures.map((f) => [f, f === currentFeature])
+    $selected_features.map((f) => [f, f === currentFeature])
   );
 
-  $: $nextButtonEnabled = $selectedFeatures.every((f) => isViewed[f]);
+  $: $nextButtonEnabled = $selected_features.every((f) => isViewed[f]);
 </script>
 
 <div class="tw-flex tw-h-full tw-w-full tw-flex-col tw-items-center tw-gap-8">
@@ -34,7 +34,7 @@
   </p>
   <div class="tw-flex tw-w-full tw-flex-1 tw-gap-16">
     <div class="tw-w-80 tw-rounded-md tw-bg-white tw-p-4">
-      {#each $selectedFeatures as feature}
+      {#each $selected_features as feature}
         <button
           class="tw-flex tw-w-full tw-items-center tw-justify-start tw-border-none tw-px-1 tw-text-black hover:tw-bg-indigo-100 active:tw-bg-indigo-200"
           class:tw-font-semibold={!isViewed[feature]}

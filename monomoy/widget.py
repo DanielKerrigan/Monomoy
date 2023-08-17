@@ -19,10 +19,10 @@ from traitlets import Dict, Int, Unicode, observe
 from traitlets import List as ListTraitlet
 
 from ._frontend import module_name, module_version
-from .data import get_initial_drawn_pds
+from .data import get_initial_drawn_pds, check_constraints
 
 
-class ExampleWidget(DOMWidget):
+class ElicitationWidget(DOMWidget):
     """TODO: Add docstring here"""
 
     _model_name = Unicode("ExampleModel").tag(sync=True)
@@ -59,6 +59,9 @@ class ExampleWidget(DOMWidget):
 
     feature_importances = Dict({}).tag(sync=True)
     constraints = Dict({}).tag(sync=True)
+    constraints_feedback = ListTraitlet([]).tag(sync=True)
+
+    selected_features = ListTraitlet([]).tag(sync=True)
 
     """
     The ice lines are a lot of data, so we want to limit how often we have to
@@ -91,6 +94,14 @@ class ExampleWidget(DOMWidget):
             data = path.read_text(encoding="utf-8")
             data = json.loads(data)
 
+        # not synced
+
+        self.df = df
+        self.predict = predict
+        self.one_hot_encoded_col_name_to_feature = data[
+            "one_hot_encoded_col_name_to_feature"
+        ]
+
         # synced widget state
 
         self.dataset = data["dataset"]
@@ -118,10 +129,9 @@ class ExampleWidget(DOMWidget):
 
         self.constraints = {feature: "" for feature in self.feature_names}
 
-        # not synced
+        self.mental_model_file_path = "mental-model.json"
 
-        self.df = df
-        self.predict = predict
+        self.selected_features = []
 
     @observe("save_file_clicked")
     def _on_save_file_clicked(self, change):
@@ -130,9 +140,24 @@ class ExampleWidget(DOMWidget):
         try:
             path = Path(self.mental_model_file_path).resolve()
             with open(path, "w", encoding="utf-8") as json_file:
-                json.dump({}, json_file)
+                mental_model = {
+                    "selected_features": self.selected_features,
+                    "drawn_trends": self.drawn_pds,
+                    "monotonicity_constraints": self.constraints,
+                }
+                json.dump(mental_model, json_file)
             error_message = ""
         except OSError as error:
             error_message = error.strerror
 
         self.save_file_result = {"num": num, "error": error_message}
+
+    @observe("constraints")
+    def _on_constraints_change(self, change):
+        self.constraints_feedback = check_constraints(
+            change["new"],
+            self.ices,
+            self.df,
+            self.one_hot_encoded_col_name_to_feature,
+            0,
+        )
