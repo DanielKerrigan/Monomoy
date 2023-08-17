@@ -16,7 +16,8 @@
 
   $: topFeatures = Object.entries($feature_importances)
     .map(([feature, { rank, score }]) => ({ feature, rank, score }))
-    .sort((a, b) => ascending(a.rank, b.rank));
+    .sort((a, b) => ascending(a.rank, b.rank))
+    .slice(0, 10);
 
   $: importanceWidth = scaleLinear().domain([0, maxScore]).range([0, 100]);
 </script>

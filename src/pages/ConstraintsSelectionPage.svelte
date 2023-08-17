@@ -24,33 +24,33 @@
     { value: 'decreasing', label: 'Decreasing', enabled: true },
   ];
 
-  $: orderedFeatures = [
+  let orderedFeatures = [
     ...$selected_features,
     ...$feature_names.filter((f) => !$selected_features.includes(f)),
   ].filter((f) => $feature_info[f].ordered);
 
-  let values: Record<string, '' | 'increasing' | 'decreasing'>;
-  $: values = Object.fromEntries(
-    orderedFeatures.map((f) => {
-      if (!$selected_features.includes(f)) {
-        return [f, ''];
-      }
+  let values: Record<string, '' | 'increasing' | 'decreasing'> =
+    Object.fromEntries(
+      orderedFeatures.map((f) => {
+        if (!$selected_features.includes(f)) {
+          return [f, ''];
+        }
 
-      const pd = $drawn_pds[f].map((d) => d.y);
-      const diff = pairs(pd, (a, b) => b - a);
+        const pd = $drawn_pds[f].map((d) => d.y);
+        const diff = pairs(pd, (a, b) => b - a);
 
-      const increasing = diff.every((d) => d >= 0);
-      const decreasing = diff.every((d) => d <= 0);
+        const increasing = diff.every((d) => d >= 0);
+        const decreasing = diff.every((d) => d <= 0);
 
-      const direction = increasing
-        ? 'increasing'
-        : decreasing
-        ? 'decreasing'
-        : '';
+        const direction = increasing
+          ? 'increasing'
+          : decreasing
+          ? 'decreasing'
+          : '';
 
-      return [f, direction];
-    })
-  );
+        return [f, direction];
+      })
+    );
 
   function matchesSearch(info: FeatureInfo, searchValue: string): boolean {
     const searchLower = searchValue.toLowerCase();
