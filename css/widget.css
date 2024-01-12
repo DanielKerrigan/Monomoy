@@ -388,3 +388,9 @@ Constrain images and videos to the parent width and preserve their intrinsic asp
 .monomoy-container label {
   margin: 0;
 }
+
+/* https://stackoverflow.com/a/69029387/5016634 */
+.monomoy-container svg {
+  -webkit-transform: translate(0px, 0px);
+  transform: translate(0px, 0px);
+}

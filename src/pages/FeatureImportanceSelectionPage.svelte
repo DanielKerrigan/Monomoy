@@ -2,15 +2,29 @@
   import {
     feature_names,
     selected_features,
-    nextButtonEnabled,
     model_output_long,
     feature_info,
+    progress,
   } from '../stores';
+  import { areArraysEqual } from '../utils';
   import type { FeatureInfo } from '../types';
 
   let searchValue = '';
 
-  $: $nextButtonEnabled = $selected_features.length > 0;
+  let initialSelection = Array.from($selected_features);
+  let changedSinceInitial = false;
+
+  $: ({ step, part } = progress);
+  $: step.setComplete($selected_features.length > 0);
+
+  $: if (
+    !changedSinceInitial &&
+    !areArraysEqual(initialSelection, $selected_features)
+  ) {
+    changedSinceInitial = true;
+    part.setNextStepsIncomplete();
+    step.setComplete($selected_features.length > 0);
+  }
 
   function addFeature(feature: string) {
     $selected_features = [...$selected_features, feature];

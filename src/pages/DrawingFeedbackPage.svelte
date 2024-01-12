@@ -3,14 +3,16 @@
     selected_features,
     pds,
     drawn_pds,
-    nextButtonEnabled,
     pdExtentNice,
     feature_info,
     model_output_short,
+    progress,
   } from '../stores';
   import { pdToXY } from '../vis-utils';
   import FeedbackPDP from '../components/FeedbackPDP.svelte';
   import Sparkline from '../components/Sparkline.svelte';
+
+  let { step } = progress;
 
   let contentRect: DOMRectReadOnly | undefined;
   $: height = contentRect?.height ?? 0;
@@ -19,10 +21,10 @@
   let currentFeature = $selected_features[0];
 
   let isViewed = Object.fromEntries(
-    $selected_features.map((f) => [f, f === currentFeature])
+    $selected_features.map((f) => [f, $step.complete || f === currentFeature])
   );
 
-  $: $nextButtonEnabled = $selected_features.every((f) => isViewed[f]);
+  $: step.setComplete($selected_features.every((f) => isViewed[f]));
 </script>
 
 <div class="tw-flex tw-h-full tw-w-full tw-flex-col tw-items-center tw-gap-8">

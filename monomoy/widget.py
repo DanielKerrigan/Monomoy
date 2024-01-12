@@ -15,7 +15,7 @@ from typing import Callable, List, Union
 import numpy as np
 import pandas as pd
 from ipywidgets import DOMWidget
-from traitlets import Dict, Int, Unicode, observe
+from traitlets import Bool, Dict, Int, Unicode, observe
 from traitlets import List as ListTraitlet
 
 from ._frontend import module_name, module_version
@@ -53,12 +53,14 @@ class ElicitationWidget(DOMWidget):
 
     drawn_pds = Dict({}).tag(sync=True)
 
+    mental_model_provided = Bool(False).tag(sync=True)
     mental_model_file_path = Unicode("").tag(sync=True)
     save_file_clicked = Int(0).tag(sync=True)
     save_file_result = Dict({"num": 0, "error": ""}).tag(sync=True)
 
     feature_importances = Dict({}).tag(sync=True)
     constraints = Dict({}).tag(sync=True)
+    feature_trends = Dict({}).tag(sync=True)
     constraints_feedback = ListTraitlet([]).tag(sync=True)
 
     selected_features = ListTraitlet([]).tag(sync=True)
@@ -79,6 +81,7 @@ class ElicitationWidget(DOMWidget):
         df: pd.DataFrame,
         labels: Union[List[float], List[int], np.ndarray, pd.Series],
         data: Union[str, Path, dict],
+        mental_model_file_path: Union[str, Path] = "",
         height: int = 600,
         **kwargs,
     ):
@@ -93,6 +96,17 @@ class ElicitationWidget(DOMWidget):
 
             data = path.read_text(encoding="utf-8")
             data = json.loads(data)
+
+        mental_model = None
+
+        if mental_model_file_path:
+            path = Path(mental_model_file_path).resolve()
+
+            if not path.exists():
+                raise OSError(f"Cannot read {path}")
+
+            mental_model = path.read_text(encoding="utf-8")
+            mental_model = json.loads(mental_model)
 
         # not synced
 
@@ -125,13 +139,20 @@ class ElicitationWidget(DOMWidget):
 
         self.height = height
 
-        self.drawn_pds = get_initial_drawn_pds(self.pds)
-
-        self.constraints = {feature: "" for feature in self.feature_names}
-
-        self.mental_model_file_path = "mental-model.json"
-
-        self.selected_features = []
+        if mental_model is not None:
+            self.mental_model_provided = True
+            self.mental_model_file_path = mental_model_file_path
+            self.selected_features = mental_model["selected_features"]
+            self.drawn_pds = mental_model["drawn_trends"]
+            self.constraints = mental_model["monotonicity_constraints"]
+            self.feature_trends = mental_model["feature_trends"]
+        else:
+            self.mental_model_provided = False
+            self.mental_model_file_path = "mental-model.json"
+            self.selected_features = []
+            self.drawn_pds = get_initial_drawn_pds(self.pds)
+            self.constraints = {feature: "" for feature in self.feature_names}
+            self.feature_trends = {feature: [] for feature in self.feature_names}
 
     @observe("save_file_clicked")
     def _on_save_file_clicked(self, change):

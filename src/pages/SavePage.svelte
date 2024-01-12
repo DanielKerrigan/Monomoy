@@ -1,6 +1,6 @@
 <script lang="ts">
   import {
-    nextButtonEnabled,
+    progress,
     mental_model_file_path,
     save_file_clicked,
     save_file_result,
@@ -20,7 +20,8 @@
     state = $save_file_result.error ? 'Save' : 'Saved';
   }
 
-  $: $nextButtonEnabled = true;
+  $: ({ step } = progress);
+  $: step.setComplete(true);
 </script>
 
 <div class="tw-flex tw-flex-col tw-items-center tw-gap-4 tw-text-base">

@@ -120,6 +120,7 @@
         d={line($drawn_pds[pd.feature])}
         fill="none"
         stroke={markColor}
+        stroke-width={2}
         pointer-events="none"
       />
     {/if}

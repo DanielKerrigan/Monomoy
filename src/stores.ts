@@ -9,8 +9,16 @@ import type {
   DrawnPD,
   FeatureImportances,
   ConstraintFeedback,
+  Workflow,
+  Part,
+  Step,
+  Position,
+  Progress,
+  Mode,
+  Trend,
 } from './types';
 import { getNiceDomain } from './vis-utils';
+import { workflow } from './workflows';
 
 /**
  *
@@ -81,6 +89,7 @@ export let height: Writable<number>;
 
 export let drawn_pds: Writable<Record<string, DrawnPD>>;
 
+export let mental_model_provided: Writable<boolean>;
 export let mental_model_file_path: Writable<string>;
 export let save_file_clicked: Writable<number>;
 export let save_file_result: Writable<{ num: number; error: string }>;
@@ -93,13 +102,84 @@ export let constraints: Writable<
 
 export let constraints_feedback: Writable<ConstraintFeedback[]>;
 
+export let feature_trends: Writable<Record<string, Trend[]>>;
+
 export let selected_features: Writable<string[]>;
 
 // ==== Stores that are not synced with traitlets ====
 
-export let pageIndex: Writable<number>;
-export let nextButtonEnabled: Writable<boolean>;
+function createProgress(): Progress {
+  let pos = { part: 0, step: 0 };
+
+  const position: Writable<Position> = writable(pos);
+  const part: Writable<Part> = writable(workflow[0]);
+  const step: Writable<Step> = writable(workflow[0].steps[0]);
+
+  function setComplete(isComplete: boolean) {
+    step.update((s) => {
+      s.complete = isComplete;
+
+      const nextPos = getNextPosition(pos, workflow);
+
+      workflow[nextPos.part].steps[nextPos.step].enabled = isComplete;
+
+      part.set(workflow[pos.part]);
+
+      return s;
+    });
+  }
+
+  function setNextStepsIncomplete() {
+    part.update((p) => {
+      for (let i = pos.step + 1; i < p.steps.length; i++) {
+        p.steps[i].complete = false;
+        p.steps[i].enabled = false;
+      }
+
+      return p;
+    });
+  }
+
+  function nextStep() {
+    position.update((p) => {
+      pos = getNextPosition(p, workflow);
+      part.set(workflow[pos.part]);
+      step.set(workflow[pos.part].steps[pos.step]);
+      return pos;
+    });
+  }
+
+  function getNextPosition(p: Position, wf: Workflow): Position {
+    const currentPart = wf[p.part];
+
+    if (p.step < currentPart.steps.length - 1) {
+      return { part: p.part, step: p.step + 1 };
+    } else if (p.part < wf.length - 1) {
+      return { part: p.part + 1, step: 0 };
+    } else {
+      return p;
+    }
+  }
+
+  function setPosition(p: Position) {
+    if (p.part < workflow.length && p.step < workflow[p.part].steps.length) {
+      pos = p;
+      position.set(p);
+      part.set(workflow[p.part]);
+      step.set(workflow[p.part].steps[p.step]);
+    }
+  }
+
+  return {
+    part: { subscribe: part.subscribe, setNextStepsIncomplete },
+    step: { subscribe: step.subscribe, setComplete },
+    position: { subscribe: position.subscribe, set: setPosition, nextStep },
+  };
+}
+
 export let pdExtentNice: Readable<[number, number]>;
+export let mode: Writable<Mode>;
+export let progress: Progress;
 
 /**
  * Note that when the cell containing the widget is re-run, a new model is
@@ -146,6 +226,12 @@ export function setStores(model: DOMWidgetModel): void {
     model
   );
 
+  mental_model_provided = createSyncedWidget<boolean>(
+    'mental_model_provided',
+    false,
+    model
+  );
+
   mental_model_file_path = createSyncedWidget<string>(
     'mental_model_file_path',
     '',
@@ -182,9 +268,15 @@ export function setStores(model: DOMWidgetModel): void {
     model
   );
 
+  feature_trends = createSyncedWidget<Record<string, Trend[]>>(
+    'feature_trends',
+    {},
+    model
+  );
+
   // ==== Stores that are not synced with traitlets ====
 
-  pageIndex = writable(0);
-  nextButtonEnabled = writable(false);
   pdExtentNice = derived(pd_extent, ($pd_extent) => getNiceDomain($pd_extent));
+  progress = createProgress();
+  mode = writable('initial');
 }

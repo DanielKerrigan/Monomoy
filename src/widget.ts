@@ -12,7 +12,7 @@ import '../css/widget.css';
 
 import { setStores } from './stores';
 
-import Widget from './components/Widget.svelte';
+import Widget from './Widget.svelte';
 
 export class ExampleModel extends DOMWidgetModel {
   defaults() {
@@ -37,12 +37,14 @@ export class ExampleModel extends DOMWidgetModel {
       height: 600,
       drawn_pds: {},
       mental_model_file_path: '',
+      mental_model_provided: false,
       save_file_clicked: 0,
       save_file_result: { num: 0, error: '' },
       feature_importances: {},
       constraints: {},
       constraints_feedback: [],
       selected_features: [],
+      feature_trends: {},
     };
   }
 

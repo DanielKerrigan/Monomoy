@@ -3,13 +3,17 @@
     selected_features,
     pds,
     drawn_pds,
-    nextButtonEnabled,
     model_output_long,
     pdExtentNice,
     feature_info,
+    progress,
+    feature_names,
   } from '../stores';
   import DrawingPDP from '../components/DrawingPDP.svelte';
   import Sparkline from '../components/Sparkline.svelte';
+  import { areArraysEqual } from '../utils';
+
+  $: ({ step, part } = progress);
 
   let contentRect: DOMRectReadOnly | undefined;
   $: height = contentRect?.height ?? 0;
@@ -21,7 +25,21 @@
     $selected_features.map((f) => [f, $drawn_pds[f].every((d) => d.drawn)])
   );
 
-  $: $nextButtonEnabled = $selected_features.every((f) => isDrawn[f]);
+  $: step.setComplete($selected_features.every((f) => isDrawn[f]));
+
+  let initial = { ...$drawn_pds };
+  let changedSinceInitial = false;
+
+  $: if (
+    !changedSinceInitial &&
+    $feature_names.some(
+      (f) => !areArraysEqual(initial[f], $drawn_pds[f], (a, b) => a.y === b.y)
+    )
+  ) {
+    changedSinceInitial = true;
+    part.setNextStepsIncomplete();
+    step.setComplete($selected_features.every((f) => isDrawn[f]));
+  }
 </script>
 
 <div class="tw-flex tw-h-full tw-w-full tw-flex-col tw-items-center tw-gap-8">

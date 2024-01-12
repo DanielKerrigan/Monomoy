@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { nextButtonEnabled } from '../stores';
+  import { progress } from '../stores';
 
-  $: $nextButtonEnabled = true;
+  $: ({ step } = progress);
+  $: step.setComplete(true);
 </script>
 
 <div class="tw-flex tw-flex-col tw-items-center tw-gap-4 tw-text-base">

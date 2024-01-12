@@ -1,5 +1,8 @@
 // Dataset
 
+import type { ComponentType } from 'svelte';
+import type { Readable } from 'svelte/store';
+
 export type Dataset = Record<string, number[]>;
 
 // Distribution
@@ -91,6 +94,12 @@ export type OneWayPD = {
 
 export type DrawnPD = { x: number; y: number; drawn: boolean }[];
 
+export type Trend = {
+  id: number;
+  drawing: DrawnPD;
+  color: string;
+};
+
 export type FeatureImportances = Record<
   string,
   { rank: number; score: number }
@@ -111,4 +120,38 @@ export type RaincloudData = {
     density: number;
   }[];
   mean: number;
+};
+
+// progress
+
+export type Mode = 'initial' | 'scratch' | 'compare' | 'modify';
+
+export type Part = {
+  title: string;
+  steps: Step[];
+};
+
+export type Step = {
+  title: string;
+  component: ComponentType;
+  enabled: boolean;
+  complete: boolean;
+  showNextButton: boolean;
+};
+
+export type Workflow = Part[];
+
+export type Position = { part: number; step: number };
+
+export type Progress = {
+  part: Readable<Part> & {
+    setNextStepsIncomplete(): void;
+  };
+  step: Readable<Step> & {
+    setComplete(isComplete: boolean): void;
+  };
+  position: Readable<Position> & {
+    set(this: void, value: Position): void;
+    nextStep(): void;
+  };
 };

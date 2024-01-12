@@ -4,18 +4,16 @@
   import {
     feature_names,
     selected_features,
-    nextButtonEnabled,
     feature_info,
     model_output_short,
     constraints,
     drawn_pds,
     pdExtentNice,
+    progress,
   } from '../stores';
   import type { FeatureInfo } from '../types';
   import { pairs } from 'd3-array';
   import Sparkline from '../components/Sparkline.svelte';
-
-  $nextButtonEnabled = true;
 
   let searchValue = '';
 
@@ -29,13 +27,10 @@
     ...$feature_names.filter((f) => !$selected_features.includes(f)),
   ].filter((f) => $feature_info[f].ordered);
 
-  let values: Record<string, '' | 'increasing' | 'decreasing'> =
+  let values: Record<string, '' | 'increasing' | 'decreasing'> = Object.assign(
+    { ...$constraints },
     Object.fromEntries(
-      orderedFeatures.map((f) => {
-        if (!$selected_features.includes(f)) {
-          return [f, ''];
-        }
-
+      $selected_features.map((f) => {
         const pd = $drawn_pds[f].map((d) => d.y);
         const diff = pairs(pd, (a, b) => b - a);
 
@@ -50,7 +45,21 @@
 
         return [f, direction];
       })
-    );
+    )
+  );
+
+  $: ({ step, part } = progress);
+  $: step.setComplete(true);
+
+  let changedSinceInitial = false;
+  $: if (
+    !changedSinceInitial &&
+    orderedFeatures.some((d) => values[d] !== $constraints[d])
+  ) {
+    changedSinceInitial = true;
+    part.setNextStepsIncomplete();
+    step.setComplete(true);
+  }
 
   function matchesSearch(info: FeatureInfo, searchValue: string): boolean {
     const searchLower = searchValue.toLowerCase();
